@@ -1,6 +1,8 @@
 packages:
   - 'apps/*'
   - 'packages/*'
+trustLockfile: true
+minimumReleaseAge: 0
 allowBuilds:
   '@prisma/client': true
   '@prisma/engines': true
