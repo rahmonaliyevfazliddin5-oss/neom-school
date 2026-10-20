@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
   // On Windows host, default output avoids EPERM symlink restrictions
   output: process.env.NEXT_OUTPUT_STANDALONE === 'true' ? 'standalone' : undefined,
   reactStrictMode: true,
+  productionBrowserSourceMaps: false,
   transpilePackages: ['@neom/shared'],
   async rewrites() {
     return [

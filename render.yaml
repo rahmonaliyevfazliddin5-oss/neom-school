@@ -33,11 +33,15 @@ services:
     plan: free
     region: frankfurt
     buildCommand: pnpm install --frozen-lockfile && pnpm --filter @neom/shared build && pnpm --filter @neom/web build
-    startCommand: pnpm --filter @neom/web start -p 10000
+    startCommand: node start-web.js
     healthCheckPath: /
     envVars:
       - key: NODE_ENV
         value: production
+      - key: NODE_OPTIONS
+        value: --max-old-space-size=384
+      - key: NEXT_TELEMETRY_DISABLED
+        value: "1"
       - key: PORT
         value: 10000
       - key: NEXT_PUBLIC_API_URL

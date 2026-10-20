@@ -4,6 +4,8 @@
   "private": true,
   "description": "NEOM School Platform - Modular Monolith Monorepo",
   "scripts": {
+    "start": "node start-web.js",
+    "start:web": "node start-web.js",
     "dev": "pnpm --parallel --filter \"@neom/api\" --filter \"@neom/web\" dev",
     "dev:api": "pnpm --filter \"@neom/api\" dev",
     "dev:web": "pnpm --filter \"@neom/web\" dev",
