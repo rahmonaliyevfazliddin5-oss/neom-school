@@ -1,0 +1,77 @@
+:root {
+  color-scheme: light;
+  --font-poppins: 'Poppins', system-ui, sans-serif;
+
+  /* Primary Palette */
+  --color-primary: #0c3b7c;
+  --color-primary-dark: #0c2f66;
+  --color-primary-subtle: #d5e3ff;
+
+  /* Accent Orange */
+  --color-accent: #f78b2d;
+  --color-accent-contrast: #1a1204;
+  --color-accent-text: #8a3d00;
+  --color-accent-subtle: #fdebd9;
+
+  /* Neutrals - Light Mode */
+  --color-bg: #f4f7fc;
+  --color-surface: #ffffff;
+  --color-border: #e1e8f3;
+  --color-border-input: #b9c8e2;
+  --color-border-divider: #e8eef7;
+
+  /* Typography */
+  --color-text: #0b2a5b;
+  --color-muted: #4a5f82;
+
+  /* Attendance Status Colors - Light */
+  --color-status-keldi-bg: #d9f3e1;
+  --color-status-keldi-text: #0d4a22;
+  --color-status-keldi-border: #1c7a3c;
+
+  --color-status-kelmadi-bg: #fde0e0;
+  --color-status-kelmadi-text: #7a1410;
+  --color-status-kelmadi-border: #b3261e;
+
+  --color-status-sababli-bg: #dbe9ff;
+  --color-status-sababli-text: #0c3b7c;
+  --color-status-sababli-border: #1f5fc4;
+
+  --color-status-kechikdi-bg: #fff3c2;
+  --color-status-kechikdi-text: #5c4400;
+  --color-status-kechikdi-border: #a67c00;
+
+  /* Layout and Sizing */
+  --radius-card: 16px;
+  --radius-btn: 10px;
+  --radius-input: 10px;
+  --height-control: 44px;
+}
+
+.dark {
+  color-scheme: dark;
+  --color-bg: #090e18;
+  --color-surface: #121a2a;
+  --color-border: #1f2c42;
+  --color-border-input: #293a56;
+  --color-border-divider: #192336;
+  --color-text: #f0f4fc;
+  --color-muted: #9bb1d6;
+
+  /* Attendance Status Colors - Dark (vibrant & comfortable contrast) */
+  --color-status-keldi-bg: #0d281a;
+  --color-status-keldi-text: #4ade80;
+  --color-status-keldi-border: #166534;
+
+  --color-status-kelmadi-bg: #2d1214;
+  --color-status-kelmadi-text: #f87171;
+  --color-status-kelmadi-border: #991b1b;
+
+  --color-status-sababli-bg: #112240;
+  --color-status-sababli-text: #60a5fa;
+  --color-status-sababli-border: #1e40af;
+
+  --color-status-kechikdi-bg: #291f08;
+  --color-status-kechikdi-text: #facc15;
+  --color-status-kechikdi-border: #854d0e;
+}

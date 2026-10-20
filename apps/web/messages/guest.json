@@ -1,0 +1,131 @@
+{
+  "brand": "NEOM SCHOOL",
+  "nav": {
+    "home": "Bosh sahifa",
+    "about": "Biz haqimizda",
+    "advantages": "Afzalliklar",
+    "news": "Yangiliklar",
+    "admission": "Qabul",
+    "contact": "Aloqa",
+    "login": "Kirish",
+    "darkMode": "Tungi rejim",
+    "lang": "UZ"
+  },
+  "hero": {
+    "badge": "Xususiy maktab · NEOM SCHOOL",
+    "title": "Neom School — kelajak maktabi",
+    "subtitle": "Kelajak maktabi",
+    "tagline1": "Bugun bilim, ertaga yetakchilik",
+    "tagline2": "Ilm • Tarbiya • Muvaffaqiyat",
+    "description": "O'quvchilarga chuqurlashtirilgan bilim va axloqiy tarbiya berish orqali ularni kelajak yetakchilariga aylantiruvchi zamonaviy xususiy maktab.",
+    "visitBtn": "Tashrif buyurish",
+    "aboutBtn": "Biz bilan tanishing"
+  },
+  "stats": {
+    "teachers": "O'qituvchilar",
+    "students": "O'quvchilar",
+    "classrooms": "Sinf xonalari",
+    "graduatesRate": "Bitiruvchilar natijasi",
+    "defaultCount": "35+",
+    "defaultPercent": "98%"
+  },
+  "about": {
+    "badge": "BIZ HAQIMIZDA",
+    "title": "NEOM SCHOOL haqida",
+    "schoolName": "NEOM SCHOOL",
+    "intro": "Neom School — o'quvchilarga ilm, tarbiya hamda muvaffaqiyat ulashishni maqsad qilgan zamonaviy kelajak maktabidir. Muassasamizda 1-sinfdan 11-sinfgacha bo'lgan o'quvchilar uchun sifatli xususiy maktab ta'limi yo'lga qo'yilgan.",
+    "missionTitle": "Bizning missiyamiz",
+    "mission": "O'quvchilarga chuqurlashtirilgan bilim va axloqiy tarbiya berish orqali ularni kelajak yetakchilariga aylantirish.",
+    "valuesTitle": "Qadriyatlarimiz",
+    "values": "Ilm-fan, yuqori axloqiy tarbiya hamda har bir o'quvchining shaxsiy muvaffaqiyati.",
+    "historyTitle": "Maktabimiz tarixi va maqsadi",
+    "history": "Neom School zamonaviy ta'lim standartlari, ilg'or pedagogik texnologiyalar va o'quvchilarning har tomonlama kamol topishiga asos solingan ilg'or xususiy ta'lim dargohidir."
+  },
+  "advantages": {
+    "badge": "TA'LIM VA XIZMATLAR",
+    "title": "Nega aynan NEOM SCHOOL?",
+    "subtitle": "Biz taklif qilayotgan zamonaviy ta'lim yo'nalishlari va imkoniyatlar",
+    "items": [
+      {
+        "title": "Xususiy maktab (1–11 sinflar)",
+        "desc": "Boshlang'ich va yuqori sinf o'quvchilari uchun sifatli xususiy maktab ta'limi hamda to'liq rivojlanish dasturi."
+      },
+      {
+        "title": "Repetitorlik kurslari",
+        "desc": "Barcha fanlar bo'yicha tajribali repetitorlar tomonidan chuqurlashtirilgan individual va guruhli darslar."
+      },
+      {
+        "title": "Xalqaro sertifikatlar (IELTS, CEFR, TOPIK, SAT)",
+        "desc": "IELTS, CEFR, TOPIK va SAT imtihonlariga professional tayyorlov va nufuzli xalqaro universitetlarga kirish."
+      },
+      {
+        "title": "O'quvchilar natijalari (@Neomnatija)",
+        "desc": "O'quvchilarimizning tasdiqlangan muvaffaqiyatli natijalari, sertifikatlari va olimpiada g'alabalari."
+      },
+      {
+        "title": "Kichik sinflar va individual e'tibor",
+        "desc": "Har bir sinfda cheklangan miqdordagi o'quvchilar va har bir bolaga individual pedagogik yondashuv."
+      },
+      {
+        "title": "Xavfsiz va zamonaviy muhit",
+        "desc": "24/7 xavfsizlik nazorati, zamonaviy texnologiyalar bilan jihozlangan sinfxonalar va qulay sharoitlar."
+      }
+    ]
+  },
+  "news": {
+    "badge": "YANGILIKLAR VA E'LONLAR",
+    "title": "Tadbirlar, yangiliklar va rejalar",
+    "filterAll": "Hammasi",
+    "filterNews": "Yangilik",
+    "filterEvent": "Tadbir",
+    "filterPlan": "Reja",
+    "imagePlaceholder": "Tadbir fotosurati",
+    "readMore": "Batafsil o'qish",
+    "loadMore": "Ko'proq",
+    "backBtn": "Orqaga",
+    "publishedAt": "E'lon qilingan sana",
+    "eventDate": "Tadbir sanasi",
+    "placeholderTitle": "Ilm-fan va robototexnika haftaligi",
+    "placeholderMeta": "Yaqinda bo'lib o'tadi · Amaliy ko'rgazma",
+    "empty": "Hozircha e'lonlar mavjud emas"
+  },
+  "admission": {
+    "badge": "QABUL JARAYONI",
+    "title": "Qabul jarayoni",
+    "steps": [
+      {
+        "num": "1",
+        "title": "Ariza topshirish",
+        "desc": "Administrator bilan bog'lanish yoki online ariza qoldirish (+998 50 006 79 69 yoki @Neomschool_admin orqali)."
+      },
+      {
+        "num": "2",
+        "title": "Suhbat",
+        "desc": "Ota-ona va bola bilan shaxsiy uchrashuv hamda suhbat."
+      },
+      {
+        "num": "3",
+        "title": "Shartnoma",
+        "desc": "Hujjatlarni rasmiylashtirish va to'lov bosqichi."
+      },
+      {
+        "num": "4",
+        "title": "O'qishni boshlash",
+        "desc": "Birinchi dars kunida o'quv jarayoniga qo'shilish va muvaffaqiyat sari qadam."
+      }
+    ]
+  },
+  "cta": {
+    "title": "Maktabimizga tashrif buyuring",
+    "defaultAddress": "Toshkent sh., Yangi O'zbekiston ko'chasi",
+    "defaultPhone": "+998 50 006 79 69",
+    "defaultWorkHours": "Dushanba – Shanba: 08:30 – 18:00",
+    "telegramAdmin": "@Neomschool_admin",
+    "telegramChannel": "@NeomSchool2025",
+    "telegramResults": "@Neomnatija"
+  },
+  "footer": {
+    "copyright": "© NEOM SCHOOL",
+    "tagline": "Bugun bilim, ertaga yetakchilik · Ilm • Tarbiya • Muvaffaqiyat"
+  }
+}

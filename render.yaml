@@ -1,0 +1,52 @@
+services:
+  # 1. API Backend (NestJS)
+  - type: web
+    name: neom-school-api
+    runtime: node
+    plan: free
+    region: frankfurt
+    buildCommand: pnpm install --frozen-lockfile && pnpm --filter @neom/shared build && pnpm --filter @neom/api build
+    startCommand: pnpm --filter @neom/api start:prod
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: JWT_SECRET
+        generateValue: true
+      - key: PEPPER
+        generateValue: true
+      - key: LOGIN_HMAC_KEY
+        generateValue: true
+      - key: LOGIN_ENC_KEY
+        generateValue: true
+      - key: COOKIE_SECRET
+        generateValue: true
+      - key: CSRF_SECRET
+        generateValue: true
+
+  # 2. Frontend Web App (Next.js)
+  - type: web
+    name: neom-school-web
+    runtime: node
+    plan: free
+    region: frankfurt
+    buildCommand: pnpm install --frozen-lockfile && pnpm --filter @neom/shared build && pnpm --filter @neom/web build
+    startCommand: pnpm --filter @neom/web start -p 10000
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: NEXT_PUBLIC_API_URL
+        fromService:
+          type: web
+          name: neom-school-api
+          property: host
+      - key: API_INTERNAL_URL
+        fromService:
+          type: web
+          name: neom-school-api
+          property: host

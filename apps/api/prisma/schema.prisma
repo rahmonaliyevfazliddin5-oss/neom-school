@@ -1,0 +1,167 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  TEACHER
+  ZAVUCH
+  DIRECTOR
+}
+
+enum AttendanceStatus {
+  KELDI
+  KELMADI
+  SABABLI
+  KECHIKDI
+}
+
+enum PostType {
+  NEWS
+  EVENT
+  PLAN
+}
+
+enum SubmissionStatus {
+  DRAFT
+  SUBMITTED
+}
+
+model User {
+  id                 String       @id @default(uuid())
+  loginHash          String       @unique // HMAC-SHA256(normalizedLogin, LOGIN_HMAC_KEY)
+  loginEnc           String       // AES-256-GCM encrypted login representation (iv:authTag:ciphertext)
+  passwordHash       String       // Argon2id + pepper hash
+  fullName           String
+  role               Role
+  isActive           Boolean      @default(true)
+  mustChangePassword Boolean      @default(true)
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+
+  homeroomClasses    Class[]      @relation("HomeroomTeacher")
+  attendancesMarked  Attendance[] @relation("AttendanceMarker")
+  postsCreated       Post[]       @relation("PostCreator")
+  auditLogs          AuditLog[]   @relation("UserAuditLogs")
+
+  @@map("users")
+}
+
+model AcademicYear {
+  id        String   @id @default(uuid())
+  name      String   @unique // e.g. "2026-2027"
+  startDate DateTime
+  endDate   DateTime
+  isCurrent Boolean  @default(false)
+
+  classes   Class[]
+
+  @@map("academic_years")
+}
+
+model Class {
+  id                String       @id @default(uuid())
+  grade             Int          // 1 - 11
+  letter            String       @db.VarChar(1) // A - Z
+  academicYearId    String
+  academicYear      AcademicYear @relation(fields: [academicYearId], references: [id], onDelete: Cascade)
+  homeroomTeacherId String?
+  homeroomTeacher   User?        @relation("HomeroomTeacher", fields: [homeroomTeacherId], references: [id], onDelete: SetNull)
+
+  students          Student[]
+  attendances       Attendance[]
+  submissions       AttendanceSubmission[]
+
+  @@unique([grade, letter, academicYearId], name: "grade_letter_academicYear_unique")
+  @@unique([homeroomTeacherId, academicYearId], name: "teacher_academicYear_unique")
+  @@map("classes")
+}
+
+model Student {
+  id        String       @id @default(uuid())
+  fullName  String
+  classId   String
+  class     Class        @relation(fields: [classId], references: [id], onDelete: Cascade)
+  isActive  Boolean      @default(true)
+  createdAt DateTime     @default(now())
+
+  attendances Attendance[]
+
+  @@map("students")
+}
+
+model Attendance {
+  id         String           @id @default(uuid())
+  studentId  String
+  student    Student          @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  classId    String
+  class      Class            @relation(fields: [classId], references: [id], onDelete: Cascade)
+  date       DateTime         @db.Date
+  status     AttendanceStatus
+  note       String?
+  markedById String
+  markedBy   User             @relation("AttendanceMarker", fields: [markedById], references: [id])
+  updatedAt  DateTime         @updatedAt
+
+  @@unique([studentId, date], name: "student_date_unique")
+  @@index([classId, date])
+  @@index([date, status])
+  @@map("attendances")
+}
+
+model AttendanceSubmission {
+  id          String           @id @default(uuid())
+  classId     String
+  class       Class            @relation(fields: [classId], references: [id], onDelete: Cascade)
+  date        DateTime         @db.Date
+  status      SubmissionStatus @default(DRAFT)
+  submittedAt DateTime         @default(now())
+
+  @@unique([classId, date], name: "class_date_submission_unique")
+  @@map("attendance_submissions")
+}
+
+model Post {
+  id          String    @id @default(uuid())
+  type        PostType
+  title       String
+  body        String    @db.Text
+  eventDate   DateTime?
+  imageUrl    String?
+  thumbUrl    String?
+  isPublished Boolean   @default(false)
+  publishedAt DateTime?
+  createdById String
+  createdBy   User      @relation("PostCreator", fields: [createdById], references: [id])
+  updatedAt   DateTime  @updatedAt
+
+  @@index([type, isPublished, publishedAt(sort: Desc)])
+  @@map("posts")
+}
+
+model SiteSetting {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  value     Json
+  updatedAt DateTime @updatedAt
+
+  @@map("site_settings")
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  user      User?    @relation("UserAuditLogs", fields: [userId], references: [id], onDelete: SetNull)
+  action    String
+  ip        String?
+  userAgent String?
+  meta      Json?
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@map("audit_logs")
+}

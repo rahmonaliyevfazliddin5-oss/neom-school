@@ -1,0 +1,7 @@
+# NEOM School Platform - Render & Python Web Server Requirements
+uvicorn>=0.30.0
+gunicorn>=22.0.0
+fastapi>=0.111.0
+pydantic>=2.7.0
+python-dotenv>=1.0.1
+requests>=2.31.0

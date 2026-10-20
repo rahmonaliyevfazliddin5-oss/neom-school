@@ -1,0 +1,25 @@
+{
+  "name": "neom-school-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "NEOM School Platform - Modular Monolith Monorepo",
+  "scripts": {
+    "dev": "pnpm --parallel --filter \"@neom/api\" --filter \"@neom/web\" dev",
+    "dev:api": "pnpm --filter \"@neom/api\" dev",
+    "dev:web": "pnpm --filter \"@neom/web\" dev",
+    "build": "pnpm --filter \"@neom/shared\" build && pnpm --filter \"@neom/api\" build && pnpm --filter \"@neom/web\" build",
+    "lint": "pnpm --recursive lint",
+    "typecheck": "pnpm --recursive typecheck",
+    "test": "pnpm --filter \"@neom/api\" test",
+    "prisma:generate": "pnpm --filter \"@neom/api\" prisma:generate",
+    "prisma:migrate": "pnpm --filter \"@neom/api\" prisma:migrate",
+    "prisma:seed": "pnpm --filter \"@neom/api\" prisma:seed",
+    "clean": "pnpm --recursive exec -- rm -rf dist .next node_modules"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.4",
+    "prettier": "^3.5.1",
+    "typescript": "^5.7.3"
+  },
+  "packageManager": "pnpm@12.14.0"
+}

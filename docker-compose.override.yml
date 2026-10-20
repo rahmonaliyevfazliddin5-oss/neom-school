@@ -1,0 +1,27 @@
+# ==============================================================================
+# Development Override for Docker Compose (Hot reload & local volumes)
+# ==============================================================================
+services:
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+      target: builder
+    command: pnpm --filter "@neom/api" dev
+    environment:
+      NODE_ENV: development
+    volumes:
+      - ./apps/api/src:/app/apps/api/src
+      - ./packages/shared/src:/app/packages/shared/src
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      target: builder
+    command: pnpm --filter "@neom/web" dev
+    environment:
+      NODE_ENV: development
+    volumes:
+      - ./apps/web/src:/app/apps/web/src
+      - ./packages/shared/src:/app/packages/shared/src

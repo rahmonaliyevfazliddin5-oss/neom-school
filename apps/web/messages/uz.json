@@ -1,0 +1,57 @@
+{
+  "common": {
+    "brand": "NEOM School",
+    "tagline": "Kelajak yulduzlari shu yerdan boshlanadi",
+    "academicYear": "2026–2027 o'quv yili",
+    "logout": "Chiqish",
+    "login": "Kirish",
+    "comingSoon": "Tez orada ishga tushadi",
+    "save": "Saqlash",
+    "cancel": "Bekor qilish",
+    "edit": "Tahrirlash",
+    "delete": "O'chirish",
+    "add": "Qo'shish",
+    "loading": "Yuklanmoqda..."
+  },
+  "nav": {
+    "home": "Bosh sahifa",
+    "about": "Biz haqimizda",
+    "advantages": "Afzalliklar",
+    "news": "Yangiliklar",
+    "admission": "Qabul",
+    "contact": "Aloqa"
+  },
+  "auth": {
+    "title": "Tizimga kirish",
+    "loginLabel": "Login",
+    "passwordLabel": "Parol",
+    "button": "Kirish",
+    "securityNotice": "Kirish ma'lumotlari shifrlangan holda tekshiriladi. Ish tugagach, albatta, tizimdan chiqing."
+  },
+  "roles": {
+    "teacher": "O'qituvchi",
+    "zavuch": "Zavuch",
+    "director": "Direktor"
+  },
+  "attendance": {
+    "title": "Kunlik davomat",
+    "sendToZavuch": "Zavuchga yuborish",
+    "keldi": "Keldi",
+    "kelmadi": "Kelmadi",
+    "sababli": "Sababli",
+    "kechikdi": "Kechikdi",
+    "studentList": "O'quvchilar ro'yxati",
+    "autoSyncNotice": "Belgilangan holat zavuch paneliga avtomatik tushadi."
+  },
+  "menu": {
+    "attendance": "Davomat",
+    "myClasses": "Sinflarim",
+    "reports": "Hisobot",
+    "passwordAndLogin": "Parol va login",
+    "dashboard": "Bosh panel",
+    "classes": "Sinflar",
+    "newsAndEvents": "Yangilik va tadbirlar",
+    "supervision": "Nazorat",
+    "staff": "Xodimlar"
+  }
+}
