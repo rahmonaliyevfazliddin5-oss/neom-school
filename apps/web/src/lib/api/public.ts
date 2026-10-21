@@ -5,9 +5,10 @@ import {
   PaginatedResult,
 } from '@neom/shared';
 
-const getApiBaseUrl = (): string => {
+const getApiBaseUrl = (): string | null => {
   if (process.env.INTERNAL_API_URL) return process.env.INTERNAL_API_URL;
   if (process.env.NEXT_PUBLIC_API_URL) return process.env.NEXT_PUBLIC_API_URL;
+  if (process.env.NODE_ENV === 'production') return null;
   return 'http://localhost:3001/api';
 };
 
@@ -24,10 +25,14 @@ export async function fetchPublicSettings(): Promise<SiteSettingsResponseDto> {
     workHours: null,
   };
 
+  const baseUrl = getApiBaseUrl();
+  if (!baseUrl) return fallback;
+
   try {
-    const res = await fetch(`${getApiBaseUrl()}/public/settings`, {
+    const res = await fetch(`${baseUrl}/public/settings`, {
       next: { revalidate: 60 },
       headers: { Accept: 'application/json' },
+      signal: AbortSignal.timeout(3000),
     });
 
     if (!res.ok) return fallback;
@@ -84,15 +89,19 @@ export async function fetchPublicPosts(
     },
   };
 
+  const baseUrl = getApiBaseUrl();
+  if (!baseUrl) return fallback;
+
   try {
     const query = new URLSearchParams();
     if (type && type !== 'ALL') query.set('type', type);
     query.set('page', String(page));
     query.set('limit', String(limit));
 
-    const res = await fetch(`${getApiBaseUrl()}/public/posts?${query.toString()}`, {
+    const res = await fetch(`${baseUrl}/public/posts?${query.toString()}`, {
       next: { revalidate: 60 },
       headers: { Accept: 'application/json' },
+      signal: AbortSignal.timeout(3000),
     });
 
     if (!res.ok) return fallback;
@@ -109,10 +118,14 @@ export async function fetchPublicPosts(
 export async function fetchPublicPostById(
   id: string,
 ): Promise<PublicPostDetailDto | null> {
+  const baseUrl = getApiBaseUrl();
+  if (!baseUrl) return null;
+
   try {
-    const res = await fetch(`${getApiBaseUrl()}/public/posts/${id}`, {
+    const res = await fetch(`${baseUrl}/public/posts/${id}`, {
       next: { revalidate: 300 },
       headers: { Accept: 'application/json' },
+      signal: AbortSignal.timeout(3000),
     });
 
     if (!res.ok) return null;
