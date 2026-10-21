@@ -40,6 +40,8 @@ const INITIAL_STUDENTS: StudentInfo[] = [
 
 export default function TeacherClassesPage() {
   const { toast } = useToast();
+  const [className, setClassName] = useState('9-A');
+  const [teacherName, setTeacherName] = useState('Qodirov Jamshid');
   const [students, setStudents] = useState<StudentInfo[]>(INITIAL_STUDENTS);
   const [search, setSearch] = useState('');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -50,42 +52,90 @@ export default function TeacherClassesPage() {
   const [newParentName, setNewParentName] = useState('');
   const [newParentPhone, setNewParentPhone] = useState('');
 
+  // Fetch teacher profile and students
+  React.useEffect(() => {
+    async function loadData() {
+      try {
+        const meRes = await fetch('/api/auth/me', { credentials: 'include' });
+        if (meRes.ok) {
+          const meData = await meRes.json();
+          const targetClass = meData.className || '9-A';
+          setClassName(targetClass);
+          if (meData.fullName) setTeacherName(meData.fullName);
+
+          // Fetch students for this class
+          const stdRes = await fetch(`/api/students?className=${encodeURIComponent(targetClass)}`);
+          if (stdRes.ok) {
+            const stdData = await stdRes.json();
+            if (Array.isArray(stdData.students) && stdData.students.length > 0) {
+              setStudents(stdData.students);
+            }
+          }
+        }
+      } catch {
+        // Fallback
+      }
+    }
+    loadData();
+  }, []);
+
   const filteredStudents = students.filter(
     (s) =>
       s.name.toLowerCase().includes(search.toLowerCase()) ||
       s.parentName.toLowerCase().includes(search.toLowerCase())
   );
 
-  const handleAddStudent = (e: React.FormEvent) => {
+  const handleAddStudent = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newName.trim()) {
       toast('O‘quvchi ismini kiriting', 'error');
       return;
     }
 
-    const created: StudentInfo = {
-      id: `std-${Date.now()}`,
-      name: newName.trim(),
-      phone: newPhone.trim() || '+998 90 000-00-00',
-      parentName: newParentName.trim() || 'Ota-ona',
-      parentPhone: newParentPhone.trim() || '+998 90 000-00-00',
-      attendanceRate: 100,
-    };
+    try {
+      const res = await fetch('/api/students', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          className: className,
+          name: newName.trim(),
+          phone: newPhone.trim() || '+998 90 000-00-00',
+          parentName: newParentName.trim() || 'Ota-ona',
+          parentPhone: newParentPhone.trim() || '+998 90 000-00-00',
+        }),
+      });
 
-    setStudents([...students, created]);
-    setIsAddModalOpen(false);
-    setNewName('');
-    setNewPhone('');
-    setNewParentName('');
-    setNewParentPhone('');
-    toast('Yangi o‘quvchi sinfga qo‘shildi!', 'success');
+      const data = await res.json().catch(() => null);
+      if (res.ok && data?.student) {
+        setStudents((prev) => [...prev, data.student]);
+      } else {
+        const fallback: StudentInfo = {
+          id: `std-${Date.now()}`,
+          name: newName.trim(),
+          phone: newPhone.trim() || '+998 90 000-00-00',
+          parentName: newParentName.trim() || 'Ota-ona',
+          parentPhone: newParentPhone.trim() || '+998 90 000-00-00',
+          attendanceRate: 100,
+        };
+        setStudents((prev) => [...prev, fallback]);
+      }
+
+      setIsAddModalOpen(false);
+      setNewName('');
+      setNewPhone('');
+      setNewParentName('');
+      setNewParentPhone('');
+      toast('Yangi o‘quvchi sinfga qo‘shildi!', 'success');
+    } catch {
+      toast('Xatolik yuz berdi', 'error');
+    }
   };
 
   return (
     <PanelShell
       role={Role.TEACHER}
-      roleLabel="O'qituvchi · 9-A sinf rahbari"
-      userName="Qodirov Jamshid"
+      roleLabel={`O'qituvchi · ${className} sinf rahbari`}
+      userName={teacherName}
     >
       <div className="flex flex-col gap-6">
         {/* Header */}
@@ -93,7 +143,7 @@ export default function TeacherClassesPage() {
           <div>
             <h1 className="text-[28px] font-bold text-[#0b2a5b] dark:text-white flex items-center gap-3">
               <Layers className="w-7 h-7 text-[#0066cc] dark:text-[#4d9fff]" />
-              Mening sinflarim (9-A sinf)
+              Mening sinflarim ({className} sinf)
             </h1>
             <p className="text-sm text-[#4a5f82] dark:text-[#9db4dd] mt-1">
               Sinf rahbari jurnali, o‘quvchilar ro‘yxati va bog‘lanish ma’lumotlari

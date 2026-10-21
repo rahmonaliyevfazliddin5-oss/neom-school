@@ -1,0 +1,446 @@
+{
+  "8-B": [
+    {
+      "id": "std-8B-1",
+      "name": "Aliyev Anvar",
+      "phone": "+998 90 100-45-67",
+      "parentName": "Aliyev Valisi",
+      "parentPhone": "+998 90 900-65-43",
+      "attendanceRate": 100
+    },
+    {
+      "id": "std-8B-2",
+      "name": "Karimova Malika",
+      "phone": "+998 90 101-45-67",
+      "parentName": "Karimova Valisi",
+      "parentPhone": "+998 90 899-65-43",
+      "attendanceRate": 100
+    },
+    {
+      "id": "std-8B-3",
+      "name": "Hasanov Ali",
+      "phone": "+998 90 102-45-67",
+      "parentName": "Hasanov Valisi",
+      "parentPhone": "+998 90 898-65-43",
+      "attendanceRate": 100
+    },
+    {
+      "id": "std-8B-4",
+      "name": "Saidova Madina",
+      "phone": "+998 90 103-45-67",
+      "parentName": "Saidova Valisi",
+      "parentPhone": "+998 90 897-65-43",
+      "attendanceRate": 100
+    },
+    {
+      "id": "std-8B-5",
+      "name": "Toshmatov Jasur",
+      "phone": "+998 90 104-45-67",
+      "parentName": "Toshmatov Valisi",
+      "parentPhone": "+998 90 896-65-43",
+      "attendanceRate": 100
+    },
+    {
+      "id": "std-8B-6",
+      "name": "Yusupova Rayhona",
+      "phone": "+998 90 105-45-67",
+      "parentName": "Yusupova Valisi",
+      "parentPhone": "+998 90 895-65-43",
+      "attendanceRate": 100
+    },
+    {
+      "id": "std-8B-7",
+      "name": "Ergashev Bobur",
+      "phone": "+998 90 106-45-67",
+      "parentName": "Ergashev Valisi",
+      "parentPhone": "+998 90 894-65-43",
+      "attendanceRate": 100
+    },
+    {
+      "id": "std-8B-8",
+      "name": "Xoliqova Ziyoda",
+      "phone": "+998 90 107-45-67",
+      "parentName": "Xoliqova Valisi",
+      "parentPhone": "+998 90 893-65-43",
+      "attendanceRate": 100
+    },
+    {
+      "id": "std-8B-9",
+      "name": "Nazarov Diyor",
+      "phone": "+998 90 108-45-67",
+      "parentName": "Nazarov Valisi",
+      "parentPhone": "+998 90 892-65-43",
+      "attendanceRate": 100
+    },
+    {
+      "id": "std-8B-10",
+      "name": "Ismoilova Sevara",
+      "phone": "+998 90 109-45-67",
+      "parentName": "Ismoilova Valisi",
+      "parentPhone": "+998 90 891-65-43",
+      "attendanceRate": 100
+    },
+    {
+      "id": "std-8B-11",
+      "name": "Rahimov Dilshod",
+      "phone": "+998 90 110-45-67",
+      "parentName": "Rahimov Valisi",
+      "parentPhone": "+998 90 890-65-43",
+      "attendanceRate": 100
+    },
+    {
+      "id": "std-8B-12",
+      "name": "Sobirova Kamola",
+      "phone": "+998 90 111-45-67",
+      "parentName": "Sobirova Valisi",
+      "parentPhone": "+998 90 889-65-43",
+      "attendanceRate": 100
+    },
+    {
+      "id": "std-8B-13",
+      "name": "Vohidov Sardor",
+      "phone": "+998 90 112-45-67",
+      "parentName": "Vohidov Valisi",
+      "parentPhone": "+998 90 888-65-43",
+      "attendanceRate": 100
+    },
+    {
+      "id": "std-8B-14",
+      "name": "Mirzayeva Lola",
+      "phone": "+998 90 113-45-67",
+      "parentName": "Mirzayeva Valisi",
+      "parentPhone": "+998 90 887-65-43",
+      "attendanceRate": 100
+    },
+    {
+      "id": "std-8B-15",
+      "name": "Zokirov Temur",
+      "phone": "+998 90 114-45-67",
+      "parentName": "Zokirov Valisi",
+      "parentPhone": "+998 90 886-65-43",
+      "attendanceRate": 100
+    },
+    {
+      "id": "std-8B-16",
+      "name": "Qosimova Shahlo",
+      "phone": "+998 90 115-45-67",
+      "parentName": "Qosimova Valisi",
+      "parentPhone": "+998 90 885-65-43",
+      "attendanceRate": 100
+    },
+    {
+      "id": "std-8B-17",
+      "name": "Boboyev Farhod",
+      "phone": "+998 90 116-45-67",
+      "parentName": "Boboyev Valisi",
+      "parentPhone": "+998 90 884-65-43",
+      "attendanceRate": 100
+    },
+    {
+      "id": "std-8B-18",
+      "name": "Normatova Diyora",
+      "phone": "+998 90 117-45-67",
+      "parentName": "Normatova Valisi",
+      "parentPhone": "+998 90 883-65-43",
+      "attendanceRate": 100
+    },
+    {
+      "id": "std-8B-19",
+      "name": "Umarov Javohir",
+      "phone": "+998 90 118-45-67",
+      "parentName": "Umarov Valisi",
+      "parentPhone": "+998 90 882-65-43",
+      "attendanceRate": 100
+    },
+    {
+      "id": "std-8B-20",
+      "name": "Shukurova Nigora",
+      "phone": "+998 90 119-45-67",
+      "parentName": "Shukurova Valisi",
+      "parentPhone": "+998 90 881-65-43",
+      "attendanceRate": 100
+    },
+    {
+      "id": "std-8B-21",
+      "name": "Azimov Rustam",
+      "phone": "+998 90 120-45-67",
+      "parentName": "Azimov Valisi",
+      "parentPhone": "+998 90 880-65-43",
+      "attendanceRate": 100
+    },
+    {
+      "id": "std-8B-22",
+      "name": "Mansurova Madina",
+      "phone": "+998 90 121-45-67",
+      "parentName": "Mansurova Valisi",
+      "parentPhone": "+998 90 879-65-43",
+      "attendanceRate": 100
+    },
+    {
+      "id": "std-8B-23",
+      "name": "G‘aniyev Bekzod",
+      "phone": "+998 90 122-45-67",
+      "parentName": "G‘aniyev Valisi",
+      "parentPhone": "+998 90 878-65-43",
+      "attendanceRate": 100
+    },
+    {
+      "id": "std-8B-24",
+      "name": "Samatova Zarina",
+      "phone": "+998 90 123-45-67",
+      "parentName": "Samatova Valisi",
+      "parentPhone": "+998 90 877-65-43",
+      "attendanceRate": 100
+    },
+    {
+      "id": "std-8B-25",
+      "name": "To‘xtayev Farrux",
+      "phone": "+998 90 124-45-67",
+      "parentName": "To‘xtayev Valisi",
+      "parentPhone": "+998 90 876-65-43",
+      "attendanceRate": 100
+    },
+    {
+      "id": "std-8B-26",
+      "name": "Mahmudova Munisa",
+      "phone": "+998 90 125-45-67",
+      "parentName": "Mahmudova Valisi",
+      "parentPhone": "+998 90 875-65-43",
+      "attendanceRate": 100
+    },
+    {
+      "id": "std-8B-27",
+      "name": "Karimov Shahzod",
+      "phone": "+998 90 126-45-67",
+      "parentName": "Karimov Valisi",
+      "parentPhone": "+998 90 874-65-43",
+      "attendanceRate": 100
+    },
+    {
+      "id": "std-8B-28",
+      "name": "Ilhomova Dilfuza",
+      "phone": "+998 90 127-45-67",
+      "parentName": "Ilhomova Valisi",
+      "parentPhone": "+998 90 873-65-43",
+      "attendanceRate": 100
+    },
+    {
+      "id": "std-8B-1792565031313",
+      "name": "Qosimova Madinabonu",
+      "phone": "+998 90 111-22-33",
+      "parentName": "Qosimov Akmal",
+      "parentPhone": "+998 90 444-55-66",
+      "attendanceRate": 100
+    }
+  ],
+  "9-A": [
+    {
+      "id": "std-9A-1",
+      "name": "Aliyev Anvar",
+      "phone": "+998 90 100-45-67",
+      "parentName": "Aliyev Valisi",
+      "parentPhone": "+998 90 900-65-43",
+      "attendanceRate": 100
+    },
+    {
+      "id": "std-9A-2",
+      "name": "Karimova Malika",
+      "phone": "+998 90 101-45-67",
+      "parentName": "Karimova Valisi",
+      "parentPhone": "+998 90 899-65-43",
+      "attendanceRate": 100
+    },
+    {
+      "id": "std-9A-3",
+      "name": "Hasanov Ali",
+      "phone": "+998 90 102-45-67",
+      "parentName": "Hasanov Valisi",
+      "parentPhone": "+998 90 898-65-43",
+      "attendanceRate": 100
+    },
+    {
+      "id": "std-9A-4",
+      "name": "Saidova Madina",
+      "phone": "+998 90 103-45-67",
+      "parentName": "Saidova Valisi",
+      "parentPhone": "+998 90 897-65-43",
+      "attendanceRate": 100
+    },
+    {
+      "id": "std-9A-5",
+      "name": "Toshmatov Jasur",
+      "phone": "+998 90 104-45-67",
+      "parentName": "Toshmatov Valisi",
+      "parentPhone": "+998 90 896-65-43",
+      "attendanceRate": 100
+    },
+    {
+      "id": "std-9A-6",
+      "name": "Yusupova Rayhona",
+      "phone": "+998 90 105-45-67",
+      "parentName": "Yusupova Valisi",
+      "parentPhone": "+998 90 895-65-43",
+      "attendanceRate": 100
+    },
+    {
+      "id": "std-9A-7",
+      "name": "Ergashev Bobur",
+      "phone": "+998 90 106-45-67",
+      "parentName": "Ergashev Valisi",
+      "parentPhone": "+998 90 894-65-43",
+      "attendanceRate": 100
+    },
+    {
+      "id": "std-9A-8",
+      "name": "Xoliqova Ziyoda",
+      "phone": "+998 90 107-45-67",
+      "parentName": "Xoliqova Valisi",
+      "parentPhone": "+998 90 893-65-43",
+      "attendanceRate": 100
+    },
+    {
+      "id": "std-9A-9",
+      "name": "Nazarov Diyor",
+      "phone": "+998 90 108-45-67",
+      "parentName": "Nazarov Valisi",
+      "parentPhone": "+998 90 892-65-43",
+      "attendanceRate": 100
+    },
+    {
+      "id": "std-9A-10",
+      "name": "Ismoilova Sevara",
+      "phone": "+998 90 109-45-67",
+      "parentName": "Ismoilova Valisi",
+      "parentPhone": "+998 90 891-65-43",
+      "attendanceRate": 100
+    },
+    {
+      "id": "std-9A-11",
+      "name": "Rahimov Dilshod",
+      "phone": "+998 90 110-45-67",
+      "parentName": "Rahimov Valisi",
+      "parentPhone": "+998 90 890-65-43",
+      "attendanceRate": 100
+    },
+    {
+      "id": "std-9A-12",
+      "name": "Sobirova Kamola",
+      "phone": "+998 90 111-45-67",
+      "parentName": "Sobirova Valisi",
+      "parentPhone": "+998 90 889-65-43",
+      "attendanceRate": 100
+    },
+    {
+      "id": "std-9A-13",
+      "name": "Vohidov Sardor",
+      "phone": "+998 90 112-45-67",
+      "parentName": "Vohidov Valisi",
+      "parentPhone": "+998 90 888-65-43",
+      "attendanceRate": 100
+    },
+    {
+      "id": "std-9A-14",
+      "name": "Mirzayeva Lola",
+      "phone": "+998 90 113-45-67",
+      "parentName": "Mirzayeva Valisi",
+      "parentPhone": "+998 90 887-65-43",
+      "attendanceRate": 100
+    },
+    {
+      "id": "std-9A-15",
+      "name": "Zokirov Temur",
+      "phone": "+998 90 114-45-67",
+      "parentName": "Zokirov Valisi",
+      "parentPhone": "+998 90 886-65-43",
+      "attendanceRate": 100
+    },
+    {
+      "id": "std-9A-16",
+      "name": "Qosimova Shahlo",
+      "phone": "+998 90 115-45-67",
+      "parentName": "Qosimova Valisi",
+      "parentPhone": "+998 90 885-65-43",
+      "attendanceRate": 100
+    },
+    {
+      "id": "std-9A-17",
+      "name": "Boboyev Farhod",
+      "phone": "+998 90 116-45-67",
+      "parentName": "Boboyev Valisi",
+      "parentPhone": "+998 90 884-65-43",
+      "attendanceRate": 100
+    },
+    {
+      "id": "std-9A-18",
+      "name": "Normatova Diyora",
+      "phone": "+998 90 117-45-67",
+      "parentName": "Normatova Valisi",
+      "parentPhone": "+998 90 883-65-43",
+      "attendanceRate": 100
+    },
+    {
+      "id": "std-9A-19",
+      "name": "Umarov Javohir",
+      "phone": "+998 90 118-45-67",
+      "parentName": "Umarov Valisi",
+      "parentPhone": "+998 90 882-65-43",
+      "attendanceRate": 100
+    },
+    {
+      "id": "std-9A-20",
+      "name": "Shukurova Nigora",
+      "phone": "+998 90 119-45-67",
+      "parentName": "Shukurova Valisi",
+      "parentPhone": "+998 90 881-65-43",
+      "attendanceRate": 100
+    },
+    {
+      "id": "std-9A-21",
+      "name": "Azimov Rustam",
+      "phone": "+998 90 120-45-67",
+      "parentName": "Azimov Valisi",
+      "parentPhone": "+998 90 880-65-43",
+      "attendanceRate": 100
+    },
+    {
+      "id": "std-9A-22",
+      "name": "Mansurova Madina",
+      "phone": "+998 90 121-45-67",
+      "parentName": "Mansurova Valisi",
+      "parentPhone": "+998 90 879-65-43",
+      "attendanceRate": 100
+    },
+    {
+      "id": "std-9A-23",
+      "name": "G‘aniyev Bekzod",
+      "phone": "+998 90 122-45-67",
+      "parentName": "G‘aniyev Valisi",
+      "parentPhone": "+998 90 878-65-43",
+      "attendanceRate": 100
+    },
+    {
+      "id": "std-9A-24",
+      "name": "Samatova Zarina",
+      "phone": "+998 90 123-45-67",
+      "parentName": "Samatova Valisi",
+      "parentPhone": "+998 90 877-65-43",
+      "attendanceRate": 100
+    },
+    {
+      "id": "std-9A-25",
+      "name": "To‘xtayev Farrux",
+      "phone": "+998 90 124-45-67",
+      "parentName": "To‘xtayev Valisi",
+      "parentPhone": "+998 90 876-65-43",
+      "attendanceRate": 100
+    },
+    {
+      "id": "std-9A-26",
+      "name": "Mahmudova Munisa",
+      "phone": "+998 90 125-45-67",
+      "parentName": "Mahmudova Valisi",
+      "parentPhone": "+998 90 875-65-43",
+      "attendanceRate": 100
+    }
+  ]
+}

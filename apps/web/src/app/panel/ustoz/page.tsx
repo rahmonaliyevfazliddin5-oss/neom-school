@@ -23,6 +23,7 @@ export default function TeacherAttendancePage() {
   const [loading, setLoading] = useState(false);
   const [className, setClassName] = useState('9-A sinf');
   const [classId, setClassId] = useState<string>('class-uuid-1');
+  const [teacherName, setTeacherName] = useState('Qodirov Jamshid');
 
   const todayStr = new Date().toISOString().split('T')[0];
 
@@ -44,8 +45,9 @@ export default function TeacherAttendancePage() {
         });
         if (res.ok) {
           const data = await res.json();
-          if (data.className) setClassName(`${data.className} sinf`);
+          if (data.className) setClassName(data.className.includes('sinf') ? data.className : `${data.className} sinf`);
           if (data.classId) setClassId(data.classId);
+          if (data.teacherName) setTeacherName(data.teacherName);
           if (data.isSubmitted) setIsSubmitted(true);
           if (Array.isArray(data.students) && data.students.length > 0) {
             setStudents(data.students);
@@ -121,7 +123,7 @@ export default function TeacherAttendancePage() {
     <PanelShell
       role={Role.TEACHER}
       roleLabel={`O'qituvchi · ${className} rahbari`}
-      userName="Qodirov Jamshid"
+      userName={teacherName}
     >
       {/* Header bar */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">

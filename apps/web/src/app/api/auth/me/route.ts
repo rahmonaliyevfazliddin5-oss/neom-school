@@ -33,6 +33,7 @@ export async function GET(req: NextRequest) {
     id: payload.sub,
     fullName: payload.fullName || 'Foydalanuvchi',
     role: payload.role,
+    className: payload.className || (payload.role === 'TEACHER' ? '9-A' : undefined),
     mustChangePassword: false,
   });
 }

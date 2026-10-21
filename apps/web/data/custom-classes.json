@@ -7,10 +7,10 @@
     "teacher": "Alimova Zarina Bahodirovna",
     "teacherLogin": "zarina_ustoz",
     "teacherPassword": "ustoz2026",
-    "studentsCount": 28,
+    "studentsCount": 29,
     "room": "206-xona",
     "attendanceRate": 100,
-    "isSubmitted": false,
+    "isSubmitted": true,
     "createdAt": "2026-10-21T06:02:14.713Z"
   }
 ]

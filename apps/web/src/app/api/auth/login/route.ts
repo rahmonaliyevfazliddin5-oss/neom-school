@@ -9,6 +9,7 @@ interface UserAccount {
   passwords: string[];
   role: 'DIRECTOR' | 'ZAVUCH' | 'TEACHER';
   name: string;
+  className?: string;
   redirectUrl: string;
 }
 
@@ -26,6 +27,7 @@ function getCustomUsers(): UserAccount[] {
           passwords: [item.password],
           role: item.role || 'TEACHER',
           name: item.fullName || 'Ustoz',
+          className: item.className || '9-A',
           redirectUrl:
             item.role === 'DIRECTOR'
               ? '/panel/direktor'
@@ -64,6 +66,7 @@ const USERS: UserAccount[] = [
     passwords: [process.env.SEED_TEACHER_PASSWORD || 'admin3', 'admin3', "o'qituvchi", 'oqituvchi'],
     role: 'TEACHER',
     name: 'Qodirov Jamshid Baxromovich',
+    className: '9-A',
     redirectUrl: '/panel/ustoz',
   },
 ];
@@ -118,6 +121,7 @@ export async function POST(req: NextRequest) {
       sub: matchedUser.id,
       role: matchedUser.role,
       fullName: matchedUser.name,
+      className: matchedUser.className || (matchedUser.role === 'TEACHER' ? '9-A' : undefined),
       iat: nowSeconds,
       exp: nowSeconds + 12 * 60 * 60, // 12 hours
     };
@@ -135,6 +139,7 @@ export async function POST(req: NextRequest) {
         id: matchedUser.id,
         fullName: matchedUser.name,
         role: matchedUser.role,
+        className: matchedUser.className || (matchedUser.role === 'TEACHER' ? '9-A' : undefined),
       },
     });
 

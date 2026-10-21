@@ -47,6 +47,7 @@ export const PanelShell: React.FC<PanelShellProps> = ({
   const [isDark, setIsDark] = useState(false);
   const [currentUserName, setCurrentUserName] = useState<string>(userName || '');
   const [currentRole, setCurrentRole] = useState<Role>(role);
+  const [currentClassName, setCurrentClassName] = useState<string>('');
 
   React.useEffect(() => {
     if (role) setCurrentRole(role);
@@ -60,6 +61,9 @@ export const PanelShell: React.FC<PanelShellProps> = ({
         }
         if (user?.fullName) {
           setCurrentUserName(user.fullName);
+        }
+        if (user?.className) {
+          setCurrentClassName(user.className);
         }
       })
       .catch(() => {});
@@ -133,7 +137,7 @@ export const PanelShell: React.FC<PanelShellProps> = ({
 
   const defaultRoleLabel =
     (currentRole || role) === Role.TEACHER
-      ? "O'qituvchi · 9-A sinf rahbari"
+      ? `O'qituvchi · ${currentClassName || '9-A'} sinf rahbari`
       : (currentRole || role) === Role.ZAVUCH
         ? "Zavuch · o'quv ishlari"
         : 'Direktor';
@@ -194,7 +198,11 @@ export const PanelShell: React.FC<PanelShellProps> = ({
           {(currentUserName || userName) && (
             <span className="font-semibold block text-white">{currentUserName || userName}</span>
           )}
-          <span>{roleLabel || defaultRoleLabel}</span>
+          <span>
+            {currentClassName && (currentRole || role) === Role.TEACHER
+              ? `O'qituvchi · ${currentClassName} sinf rahbari`
+              : (roleLabel || defaultRoleLabel)}
+          </span>
         </div>
         <button
           onClick={handleLogout}

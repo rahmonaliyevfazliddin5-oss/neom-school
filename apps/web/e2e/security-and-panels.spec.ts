@@ -108,4 +108,36 @@ test.describe('NEOM School 3 ta panel va xavfsizlik tizimi E2E testlari', () => 
     expect(html).not.toContain('zavuch paneli');
     expect(html).not.toContain('o\'qituvchi paneli');
   });
+
+  test('7. Zavuch yaratgan yangi sinf va sinf rahbari login/parol bilan tizimga kirishi va barcha imkoniyatlari ishlashi', async ({ page }) => {
+    // 1. Kirish sahifasiga o'tish va yangi o'qituvchi akkaunti bilan kirish
+    await page.goto('/kirish');
+    await page.fill('input[type="text"]', 'zarina_ustoz');
+    await page.fill('input[type="password"]', 'ustoz2026');
+    await page.click('button[type="submit"]');
+
+    // 2. /panel/ustoz ochiladi va 8-B sinf deb ko'rinadi
+    await page.waitForURL('**/panel/ustoz', { timeout: 10000 });
+    await expect(page.locator('h1')).toContainText('Kunlik davomat');
+    await expect(page.locator('text=8-B sinf').first()).toBeVisible();
+    await expect(page.locator('text=Alimova Zarina').first()).toBeVisible();
+
+    // 3. Davomatni zavuchga yuborish
+    const submitBtn = page.locator('button:has-text("Zavuchga yuborish")');
+    if (await submitBtn.isVisible()) {
+      await submitBtn.click();
+      await expect(page.locator('text=Zavuchga yuborilgan')).toBeVisible();
+    }
+
+    // 4. Sinflarim bo'limi 8-B ga moslashgan
+    await page.click('aside a[href="/panel/ustoz/sinflar"]');
+    await page.waitForURL('**/panel/ustoz/sinflar');
+    await expect(page.locator('h1')).toContainText('8-B sinf');
+
+    // 5. Hisobot bo'limi 8-B ga moslashgan
+    await page.click('aside a[href="/panel/ustoz/hisobot"]');
+    await page.waitForURL('**/panel/ustoz/hisobot');
+    await expect(page.locator('h1')).toContainText('8-B sinf');
+    await expect(page.locator('button:has-text("Excel yuklab olish")')).toBeVisible();
+  });
 });
