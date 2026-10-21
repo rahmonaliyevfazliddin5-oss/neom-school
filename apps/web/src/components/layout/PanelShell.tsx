@@ -113,8 +113,8 @@ export const PanelShell: React.FC<PanelShellProps> = ({
       case Role.ZAVUCH:
         return [
           { title: 'Bosh panel', href: '/panel/zavuch', icon: LayoutDashboard },
-          { title: 'Sinflar', href: '/panel/zavuch', icon: Layers },
-          { title: 'Yangilik va tadbirlar', href: '/panel/zavuch', icon: Newspaper },
+          { title: 'Sinflar', href: '/panel/zavuch/sinflar', icon: Layers },
+          { title: 'Yangilik va tadbirlar', href: '/panel/zavuch/yangiliklar', icon: Newspaper },
           { title: 'Parol va login', href: '/panel/parol-login', icon: KeyRound },
         ];
       case Role.DIRECTOR:

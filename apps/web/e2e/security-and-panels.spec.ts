@@ -11,13 +11,32 @@ test.describe('NEOM School 3 ta panel va xavfsizlik tizimi E2E testlari', () => 
     await expect(page.locator('h1')).toContainText('Maktab nazorati');
   });
 
-  test('2. Zamdirektor login: admin2 / parol: admin2 -> /panel/zavuch ochiladi', async ({ page }) => {
+  test('2. Zamdirektor login: admin2 / parol: admin2 -> Bosh panel, Sinflar va Yangiliklar to‘liq ishlaydi', async ({ page }) => {
     await page.goto('/kirish');
     await page.fill('input[type="text"]', 'admin2');
     await page.fill('input[type="password"]', 'admin2');
     await page.click('button[type="submit"]');
 
+    // 1. Bosh panel
     await page.waitForURL('**/panel/zavuch', { timeout: 10000 });
+    await expect(page.locator('h1')).toContainText('Bugungi davomat');
+
+    // 2. Sinflar bo'limi
+    await page.click('aside a[href="/panel/zavuch/sinflar"]');
+    await page.waitForURL('**/panel/zavuch/sinflar');
+    await expect(page.locator('h1')).toContainText('Maktab sinflari');
+    await expect(page.locator('text=Jami sinflar')).toBeVisible();
+    await expect(page.getByText('1-A sinf', { exact: true })).toBeVisible();
+
+    // 3. Yangilik va tadbirlar bo'limi
+    await page.click('aside a[href="/panel/zavuch/yangiliklar"]');
+    await page.waitForURL('**/panel/zavuch/yangiliklar');
+    await expect(page.locator('h1')).toContainText('Yangilik va tadbirlar');
+    await expect(page.locator('text=Jami e’lonlar')).toBeVisible();
+
+    // 4. Qayta Bosh panelga qaytish
+    await page.click('aside a[href="/panel/zavuch"]');
+    await page.waitForURL('**/panel/zavuch');
     await expect(page.locator('h1')).toContainText('Bugungi davomat');
   });
 
