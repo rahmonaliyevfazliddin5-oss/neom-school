@@ -26,16 +26,19 @@ interface StudentInfo {
   phone: string;
   parentName: string;
   parentPhone: string;
+  academicYear?: string;
+  enrollmentDate?: string;
+  status?: string;
   attendanceRate: number;
 }
 
 const INITIAL_STUDENTS: StudentInfo[] = [
-  { id: '1', name: 'Aliyev Anvar', phone: '+998 90 123-45-67', parentName: 'Aliyev Shavkat', parentPhone: '+998 90 987-65-43', attendanceRate: 98 },
-  { id: '2', name: 'Karimova Malika', phone: '+998 93 234-56-78', parentName: 'Karimova Nargiza', parentPhone: '+998 93 876-54-32', attendanceRate: 92 },
-  { id: '3', name: 'Hasanov Ali', phone: '+998 97 345-67-89', parentName: 'Hasanov Dilshod', parentPhone: '+998 97 765-43-21', attendanceRate: 94 },
-  { id: '4', name: 'Saidova Madina', phone: '+998 99 456-78-90', parentName: 'Saidov Bahrom', parentPhone: '+998 99 654-32-10', attendanceRate: 96 },
-  { id: '5', name: 'Toshmatov Jasur', phone: '+998 91 567-89-01', parentName: 'Toshmatov Otabek', parentPhone: '+998 91 543-21-09', attendanceRate: 100 },
-  { id: '6', name: 'Yusupova Rayhona', phone: '+998 94 678-90-12', parentName: 'Yusupova Gulnora', parentPhone: '+998 94 432-10-98', attendanceRate: 96 },
+  { id: '1', name: 'Aliyev Anvar', phone: '+998 90 123-45-67', parentName: 'Aliyev Shavkat', parentPhone: '+998 90 987-65-43', academicYear: '2026–2027', enrollmentDate: '02.09.2026', status: 'Faol', attendanceRate: 98 },
+  { id: '2', name: 'Karimova Malika', phone: '+998 93 234-56-78', parentName: 'Karimova Nargiza', parentPhone: '+998 93 876-54-32', academicYear: '2026–2027', enrollmentDate: '02.09.2026', status: 'Faol', attendanceRate: 92 },
+  { id: '3', name: 'Hasanov Ali', phone: '+998 97 345-67-89', parentName: 'Hasanov Dilshod', parentPhone: '+998 97 765-43-21', academicYear: '2026–2027', enrollmentDate: '02.09.2026', status: 'Faol', attendanceRate: 94 },
+  { id: '4', name: 'Saidova Madina', phone: '+998 99 456-78-90', parentName: 'Saidov Bahrom', parentPhone: '+998 99 654-32-10', academicYear: '2026–2027', enrollmentDate: '02.09.2026', status: 'Faol', attendanceRate: 96 },
+  { id: '5', name: 'Toshmatov Jasur', phone: '+998 91 567-89-01', parentName: 'Toshmatov Otabek', parentPhone: '+998 91 543-21-09', academicYear: '2026–2027', enrollmentDate: '02.09.2026', status: 'Faol', attendanceRate: 100 },
+  { id: '6', name: 'Yusupova Rayhona', phone: '+998 94 678-90-12', parentName: 'Yusupova Gulnora', parentPhone: '+998 94 432-10-98', academicYear: '2026–2027', enrollmentDate: '02.09.2026', status: 'Faol', attendanceRate: 96 },
 ];
 
 export default function TeacherClassesPage() {
@@ -237,9 +240,11 @@ export default function TeacherClassesPage() {
                 <tr className="bg-[#f8fafc] dark:bg-[#1c2c47] border-b border-[#e1e8f3] dark:border-[#24324d] text-xs font-semibold text-[#4a5f82] dark:text-[#9db4dd]">
                   <th className="py-3 px-4">#</th>
                   <th className="py-3 px-4">O‘quvchi (F.I.SH)</th>
+                  <th className="py-3 px-4 text-center">O‘quv yili</th>
                   <th className="py-3 px-4">Telefon</th>
                   <th className="py-3 px-4">Ota-onasi</th>
                   <th className="py-3 px-4">Ota-ona telefoni</th>
+                  <th className="py-3 px-4 text-center">Holati</th>
                   <th className="py-3 px-4 text-center">Davomat ko‘rsatkichi</th>
                 </tr>
               </thead>
@@ -247,13 +252,26 @@ export default function TeacherClassesPage() {
                 {filteredStudents.map((std, idx) => (
                   <tr key={std.id} className="hover:bg-[#f8fafc] dark:hover:bg-[#172236] transition-colors">
                     <td className="py-3.5 px-4 text-xs font-bold text-[#7e95b8]">{idx + 1}</td>
-                    <td className="py-3.5 px-4 font-bold text-[#0b2a5b] dark:text-white">{std.name}</td>
+                    <td className="py-3.5 px-4 font-bold text-[#0b2a5b] dark:text-white">
+                      <div>{std.name}</div>
+                      <div className="text-[11px] text-[#7e95b8] font-normal">Qo‘shilgan: {std.enrollmentDate || '02.09.2026'}</div>
+                    </td>
+                    <td className="py-3.5 px-4 text-center">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-sm text-[11px] font-bold bg-[#e6f0ff] dark:bg-[#1c2c47] text-[#0066cc] dark:text-[#4d9fff]">
+                        {std.academicYear || '2026–2027'}
+                      </span>
+                    </td>
                     <td className="py-3.5 px-4 text-[#4a5f82] dark:text-[#9db4dd] text-xs flex items-center gap-1.5 pt-4">
                       <Phone className="w-3.5 h-3.5 text-[#0066cc]" />
                       {std.phone}
                     </td>
                     <td className="py-3.5 px-4 text-[#4a5f82] dark:text-[#9db4dd] text-xs">{std.parentName}</td>
                     <td className="py-3.5 px-4 text-[#4a5f82] dark:text-[#9db4dd] text-xs">{std.parentPhone}</td>
+                    <td className="py-3.5 px-4 text-center">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#e6fff0] dark:bg-[#163824] text-[#009944] dark:text-[#33cc77]">
+                        {std.status || 'Faol'}
+                      </span>
+                    </td>
                     <td className="py-3.5 px-4 text-center">
                       <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#e6fff0] dark:bg-[#163824] text-[#009944] dark:text-[#33cc77]">
                         {std.attendanceRate}%
@@ -271,10 +289,15 @@ export default function TeacherClassesPage() {
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
             <Card className="w-full max-w-md p-6 bg-white dark:bg-[#141d2e] border-[#ccd8e8] dark:border-[#24324d] shadow-xl">
               <div className="flex items-center justify-between pb-4 border-b border-[#edf2f7] dark:border-[#24324d]">
-                <h3 className="text-lg font-bold text-[#0b2a5b] dark:text-white flex items-center gap-2">
-                  <UserPlus className="w-5 h-5 text-[#0066cc]" />
-                  9-A sinfiga yangi o‘quvchi qo‘shish
-                </h3>
+                <div>
+                  <h3 className="text-lg font-bold text-[#0b2a5b] dark:text-white flex items-center gap-2">
+                    <UserPlus className="w-5 h-5 text-[#0066cc]" />
+                    {className} sinfiga yangi o‘quvchi qo‘shish
+                  </h3>
+                  <p className="text-xs text-[#0066cc] dark:text-[#4d9fff] font-semibold mt-0.5">
+                    2026–2027 o‘quv yili bazasiga kiritish
+                  </p>
+                </div>
                 <button
                   onClick={() => setIsAddModalOpen(false)}
                   className="text-[#7e95b8] hover:text-[#0b2a5b] dark:hover:text-white"

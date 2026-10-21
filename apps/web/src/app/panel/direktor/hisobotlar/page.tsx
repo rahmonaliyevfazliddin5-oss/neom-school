@@ -35,7 +35,10 @@ export default function DirectorReportsPage() {
   const { toast } = useToast();
   const [directorName, setDirectorName] = useState('Rustamov Shavkat');
   const [selectedPeriod, setSelectedPeriod] = useState<'WEEK' | 'MONTH' | 'QUARTER'>('MONTH');
+  const [selectedMonth, setSelectedMonth] = useState('2026-10');
+  const [selectedMonthName, setSelectedMonthName] = useState('Oktabr 2026');
   const [gradeFilter, setGradeFilter] = useState<'ALL' | 'PRIMARY' | 'MIDDLE' | 'HIGH'>('ALL');
+  const [customClassesList, setCustomClassesList] = useState<any[]>([]);
 
   React.useEffect(() => {
     fetch('/api/auth/me', { credentials: 'include' })
@@ -43,6 +46,15 @@ export default function DirectorReportsPage() {
       .then((data) => {
         const user = data?.data || data;
         if (user?.fullName) setDirectorName(user.fullName);
+      })
+      .catch(() => {});
+
+    fetch('/api/classes')
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data?.success && Array.isArray(data.classes)) {
+          setCustomClassesList(data.classes);
+        }
       })
       .catch(() => {});
   }, []);
@@ -149,7 +161,25 @@ export default function DirectorReportsPage() {
     },
   ];
 
-  const filteredRows = reportData.filter((row) => {
+  const mergedReportData: ReportRow[] = React.useMemo(() => {
+    const customRows: ReportRow[] = customClassesList.map((c) => ({
+      className: c.name,
+      teacher: c.teacher || 'Ustoz',
+      totalStudents: c.studentsCount || 25,
+      rate: selectedMonth === '2026-09' ? 97 : (c.attendanceRate || 98),
+      keldi: Math.round((c.studentsCount || 25) * 0.96),
+      kelmadi: 1,
+      sababli: 0,
+      kechikdi: 0,
+      statusText: 'A’lo',
+    }));
+
+    const existingNames = new Set(customRows.map((c) => c.className.toLowerCase()));
+    const remaining = reportData.filter((r) => !existingNames.has(r.className.toLowerCase()));
+    return [...customRows, ...remaining];
+  }, [customClassesList, selectedMonth]);
+
+  const filteredRows = mergedReportData.filter((row) => {
     const gradeNum = parseInt(row.className.split('-')[0], 10);
     if (gradeFilter === 'PRIMARY') return gradeNum <= 4;
     if (gradeFilter === 'MIDDLE') return gradeNum >= 5 && gradeNum <= 9;
@@ -170,12 +200,12 @@ export default function DirectorReportsPage() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.setAttribute('href', url);
-    link.setAttribute('download', `Neom_School_Davomat_Hisoboti_${new Date().toISOString().slice(0, 10)}.csv`);
+    link.setAttribute('download', `Neom_School_Davomat_Hisoboti_${selectedMonthName.replace(/\s+/g, '_')}_2026-2027.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
 
-    toast("Hisobot CSV (Excel) formatida yuklab olindi!", 'success');
+    toast(`${selectedMonthName} umumiy maktab hisoboti Excel (CSV) formatida yuklab olindi!`, 'success');
   };
 
   const handlePrint = () => {
@@ -277,10 +307,27 @@ export default function DirectorReportsPage() {
         {/* Filter Toolbar */}
         <Card className="p-4 bg-white dark:bg-[#141d2e] border-[#e1e8f3] dark:border-[#24324d]">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <span className="text-xs font-semibold text-[#4a5f82] dark:text-[#9db4dd]">
-                Davr:
+                2026–2027 o‘quv yili:
               </span>
+
+              <select
+                value={selectedMonth}
+                onChange={(e) => {
+                  setSelectedMonth(e.target.value);
+                  const optText = e.target.options[e.target.selectedIndex].text;
+                  setSelectedMonthName(optText.split(' (')[0]);
+                }}
+                className="px-3 py-1.5 rounded-lg text-xs font-bold bg-[#e6f0ff] dark:bg-[#1c2c47] text-[#0066cc] dark:text-[#4d9fff] border border-[#ccd8e8] dark:border-[#2f4063] focus:outline-hidden cursor-pointer"
+              >
+                <option value="2026-10">Oktabr 2026 (Joriy oy)</option>
+                <option value="2026-09">Sentabr 2026 (O‘tgan oy)</option>
+                <option value="QUARTER-1">1-chorak (Sentabr–Oktabr)</option>
+                <option value="QUARTER-2">2-chorak (Noyabr–Dekabr)</option>
+                <option value="YEAR">2026–2027 o‘quv yili (Yillik)</option>
+              </select>
+
               <button
                 onClick={() => setSelectedPeriod('WEEK')}
                 className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors ${
@@ -289,7 +336,7 @@ export default function DirectorReportsPage() {
                     : 'bg-gray-100 dark:bg-gray-800 text-[#4a5f82] dark:text-[#9db4dd]'
                 }`}
               >
-                Joriy hafta
+                Haftalik
               </button>
               <button
                 onClick={() => setSelectedPeriod('MONTH')}
@@ -299,7 +346,7 @@ export default function DirectorReportsPage() {
                     : 'bg-gray-100 dark:bg-gray-800 text-[#4a5f82] dark:text-[#9db4dd]'
                 }`}
               >
-                Joriy oy
+                Oylik
               </button>
               <button
                 onClick={() => setSelectedPeriod('QUARTER')}
@@ -309,7 +356,7 @@ export default function DirectorReportsPage() {
                     : 'bg-gray-100 dark:bg-gray-800 text-[#4a5f82] dark:text-[#9db4dd]'
                 }`}
               >
-                1-chorak
+                Choraklik
               </button>
             </div>
 

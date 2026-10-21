@@ -37,10 +37,18 @@ export async function GET(req: NextRequest) {
   const className = searchParams.get('className') || '9-A';
 
   const classStudentsMap = readJsonFile<Record<string, any[]>>('class-students.json', {});
-  const students = classStudentsMap[className] || [];
+  const rawStudents = classStudentsMap[className] || [];
+
+  const students = rawStudents.map((s, idx) => ({
+    ...s,
+    academicYear: s.academicYear || '2026–2027',
+    enrollmentDate: s.enrollmentDate || '02.09.2026',
+    status: s.status || 'Faol',
+  }));
 
   return NextResponse.json({
     success: true,
+    academicYear: '2026–2027',
     className,
     students,
   });
@@ -61,12 +69,21 @@ export async function POST(req: NextRequest) {
     const classStudentsMap = readJsonFile<Record<string, any[]>>('class-students.json', {});
     const list = classStudentsMap[className] || [];
 
+    const nowStr = new Date().toLocaleDateString('uz-UZ', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    });
+
     const newStudent = {
       id: `std-${className.replace(/[^a-zA-Z0-9]/g, '')}-${Date.now()}`,
       name: String(name).trim(),
       phone: String(phone || '+998 90 000-00-00').trim(),
       parentName: String(parentName || 'Ota-ona').trim(),
       parentPhone: String(parentPhone || '+998 90 000-00-00').trim(),
+      academicYear: '2026–2027',
+      enrollmentDate: nowStr,
+      status: 'Faol',
       attendanceRate: 100,
     };
 

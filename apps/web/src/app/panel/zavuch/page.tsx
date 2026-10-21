@@ -6,6 +6,7 @@ import { Card } from '@/components/ui/Card';
 import { StatCard } from '@/components/ui/StatCard';
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { Role } from '@neom/shared';
+import { Calendar } from 'lucide-react';
 
 interface AbsenteeItem {
   id?: string;
@@ -27,6 +28,7 @@ interface ClassSubmissionItem {
 }
 
 export default function ZavuchDashboardPage() {
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [counts, setCounts] = useState({
     keldi: 684,
     kelmadi: 18,
@@ -51,8 +53,7 @@ export default function ZavuchDashboardPage() {
   useEffect(() => {
     async function loadZavuchDashboard() {
       try {
-        const todayStr = new Date().toISOString().split('T')[0];
-        const res = await fetch(`/api/attendance/zavuch/dashboard?date=${todayStr}`, {
+        const res = await fetch(`/api/attendance/zavuch/dashboard?date=${selectedDate}`, {
           credentials: 'include',
         });
         if (res.ok) {
@@ -78,7 +79,7 @@ export default function ZavuchDashboardPage() {
     }
 
     loadZavuchDashboard();
-  }, []);
+  }, [selectedDate]);
 
   const totalMarked = counts.keldi + counts.kelmadi + counts.sababli + counts.kechikdi;
   const attendancePercent = totalMarked > 0 ? Math.round((counts.keldi / totalMarked) * 100) : 96;
@@ -89,13 +90,30 @@ export default function ZavuchDashboardPage() {
       roleLabel="Zavuch · o'quv ishlari"
       userName="Nodirova Dilnoza"
     >
-      <div>
-        <h1 className="text-[28px] font-bold text-[#0b2a5b] dark:text-white">
-          Bugungi davomat
-        </h1>
-        <p className="text-sm text-[#4a5f82] dark:text-[#9db4dd]">
-          Maktab bo&apos;yicha umumiy o&apos;quvchilar davomati monitoringi
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-[#e6f0ff] dark:bg-[#1c2c47] text-[#0066cc] dark:text-[#4d9fff] text-xs font-bold mb-1.5">
+            2026–2027 o‘quv yili
+          </div>
+          <h1 className="text-[28px] font-bold text-[#0b2a5b] dark:text-white">
+            Bugungi davomat monitoringi
+          </h1>
+          <p className="text-sm text-[#4a5f82] dark:text-[#9db4dd]">
+            Maktab bo‘yicha sinflar davomati va o‘quvchilar nazorati
+          </p>
+        </div>
+
+        {/* Sana tanlash */}
+        <div className="flex items-center gap-2 bg-white dark:bg-[#141d2e] px-3.5 py-2 rounded-xl border border-[#ccd8e8] dark:border-[#24324d] shadow-xs">
+          <Calendar className="w-4 h-4 text-[#0066cc] dark:text-[#4d9fff]" />
+          <span className="text-xs font-semibold text-[#4a5f82] dark:text-[#9db4dd]">Sana:</span>
+          <input
+            type="date"
+            value={selectedDate}
+            onChange={(e) => setSelectedDate(e.target.value)}
+            className="text-xs font-bold text-[#0b2a5b] dark:text-white bg-transparent focus:outline-hidden cursor-pointer"
+          />
+        </div>
       </div>
 
       {/* Summary Cards */}

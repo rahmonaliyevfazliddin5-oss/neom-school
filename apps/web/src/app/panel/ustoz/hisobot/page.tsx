@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PanelShell } from '@/components/layout/PanelShell';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -14,11 +14,12 @@ import {
   TrendingUp,
   CheckCircle2,
   XCircle,
-  AlertCircle,
   Clock,
+  ChevronDown,
 } from 'lucide-react';
 
 interface AttendanceRow {
+  id: string;
   student: string;
   mon: string;
   tue: string;
@@ -26,27 +27,42 @@ interface AttendanceRow {
   thu: string;
   fri: string;
   sat: string;
+  attendedDays: number;
+  missedDays: number;
+  excusedDays: number;
+  lateDays: number;
   rate: number;
 }
 
-const REPORT_DATA: AttendanceRow[] = [
-  { student: 'Aliyev Anvar', mon: 'Keldi', tue: 'Keldi', wed: 'Keldi', thu: 'Keldi', fri: 'Keldi', sat: 'Keldi', rate: 100 },
-  { student: 'Karimova Malika', mon: 'Keldi', tue: 'Kelmadi', wed: 'Keldi', thu: 'Keldi', fri: 'Keldi', sat: 'Keldi', rate: 83 },
-  { student: 'Hasanov Ali', mon: 'Keldi', tue: 'Keldi', wed: 'Sababli', thu: 'Keldi', fri: 'Keldi', sat: 'Keldi', rate: 83 },
-  { student: 'Saidova Madina', mon: 'Keldi', tue: 'Keldi', wed: 'Kechikdi', thu: 'Keldi', fri: 'Keldi', sat: 'Keldi', rate: 95 },
-  { student: 'Toshmatov Jasur', mon: 'Keldi', tue: 'Keldi', wed: 'Keldi', thu: 'Keldi', fri: 'Keldi', sat: 'Keldi', rate: 100 },
-  { student: 'Yusupova Rayhona', mon: 'Keldi', tue: 'Keldi', wed: 'Keldi', thu: 'Keldi', fri: 'Keldi', sat: 'Keldi', rate: 100 },
+const DEFAULT_ROWS: AttendanceRow[] = [
+  { id: '1', student: 'Aliyev Anvar', mon: 'Keldi', tue: 'Keldi', wed: 'Keldi', thu: 'Keldi', fri: 'Keldi', sat: 'Keldi', attendedDays: 22, missedDays: 0, excusedDays: 0, lateDays: 0, rate: 100 },
+  { id: '2', student: 'Karimova Malika', mon: 'Keldi', tue: 'Kelmadi', wed: 'Keldi', thu: 'Keldi', fri: 'Keldi', sat: 'Keldi', attendedDays: 20, missedDays: 2, excusedDays: 0, lateDays: 0, rate: 91 },
+  { id: '3', student: 'Hasanov Ali', mon: 'Keldi', tue: 'Keldi', wed: 'Sababli', thu: 'Keldi', fri: 'Keldi', sat: 'Keldi', attendedDays: 21, missedDays: 0, excusedDays: 1, lateDays: 0, rate: 95 },
+  { id: '4', student: 'Saidova Madina', mon: 'Keldi', tue: 'Keldi', wed: 'Kechikdi', thu: 'Keldi', fri: 'Keldi', sat: 'Keldi', attendedDays: 21, missedDays: 0, excusedDays: 0, lateDays: 1, rate: 98 },
+  { id: '5', student: 'Toshmatov Jasur', mon: 'Keldi', tue: 'Keldi', wed: 'Keldi', thu: 'Keldi', fri: 'Keldi', sat: 'Keldi', attendedDays: 22, missedDays: 0, excusedDays: 0, lateDays: 0, rate: 100 },
+  { id: '6', student: 'Yusupova Rayhona', mon: 'Keldi', tue: 'Keldi', wed: 'Keldi', thu: 'Keldi', fri: 'Keldi', sat: 'Keldi', attendedDays: 22, missedDays: 0, excusedDays: 0, lateDays: 0, rate: 100 },
 ];
 
 export default function TeacherReportPage() {
   const { toast } = useToast();
   const [className, setClassName] = useState('9-A');
   const [teacherName, setTeacherName] = useState('Qodirov Jamshid');
-  const [reportData, setReportData] = useState<AttendanceRow[]>(REPORT_DATA);
-  const [period, setPeriod] = useState<'WEEK' | 'MONTH' | 'QUARTER'>('WEEK');
+  const [periodType, setPeriodType] = useState<'MONTH' | 'WEEK' | 'QUARTER' | 'YEAR'>('MONTH');
+  const [selectedMonth, setSelectedMonth] = useState('2026-10');
+  const [selectedMonthName, setSelectedMonthName] = useState('Oktabr 2026');
+  const [reportRows, setReportRows] = useState<AttendanceRow[]>(DEFAULT_ROWS);
 
-  React.useEffect(() => {
-    async function loadData() {
+  const [stats, setStats] = useState({
+    rate: 98.1,
+    totalDays: 22,
+    keldi: 614,
+    kelmadi: 8,
+    kechikdi: 4,
+  });
+
+  // Load teacher profile & initial report
+  useEffect(() => {
+    async function init() {
       try {
         const meRes = await fetch('/api/auth/me', { credentials: 'include' });
         if (meRes.ok) {
@@ -55,47 +71,78 @@ export default function TeacherReportPage() {
           setClassName(targetClass);
           if (meData.fullName) setTeacherName(meData.fullName);
 
-          // Fetch students to populate rows
-          const stdRes = await fetch(`/api/students?className=${encodeURIComponent(targetClass)}`);
-          if (stdRes.ok) {
-            const stdData = await stdRes.json();
-            if (Array.isArray(stdData.students) && stdData.students.length > 0) {
-              const rows: AttendanceRow[] = stdData.students.map((s: any, idx: number) => ({
-                student: s.name,
-                mon: 'Keldi',
-                tue: idx % 7 === 1 ? 'Kelmadi' : 'Keldi',
-                wed: idx % 9 === 2 ? 'Sababli' : idx % 11 === 3 ? 'Kechikdi' : 'Keldi',
-                thu: 'Keldi',
-                fri: 'Keldi',
-                sat: 'Keldi',
-                rate: idx % 7 === 1 ? 83 : idx % 9 === 2 ? 83 : idx % 11 === 3 ? 95 : 100,
-              }));
-              setReportData(rows);
-            }
-          }
+          loadReport(targetClass, selectedMonth);
         }
       } catch {
         // Fallback
       }
     }
-    loadData();
+    init();
   }, []);
 
+  const loadReport = async (cls: string, periodId: string) => {
+    try {
+      const res = await fetch(`/api/reports/class?className=${encodeURIComponent(cls)}&period=${encodeURIComponent(periodId)}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data?.report) {
+          const rep = data.report;
+          setSelectedMonthName(rep.monthName);
+          setStats({
+            rate: rep.attendanceRate,
+            totalDays: rep.totalDays,
+            keldi: rep.keldi,
+            kelmadi: rep.kelmadi,
+            kechikdi: rep.kechikdi,
+          });
+
+          if (Array.isArray(rep.students) && rep.students.length > 0) {
+            const formatted: AttendanceRow[] = rep.students.map((s: any) => ({
+              id: s.id,
+              student: s.name,
+              mon: s.mon || 'Keldi',
+              tue: s.tue || 'Keldi',
+              wed: s.wed || 'Keldi',
+              thu: s.thu || 'Keldi',
+              fri: s.fri || 'Keldi',
+              sat: s.sat || 'Keldi',
+              attendedDays: s.attendedDays ?? 22,
+              missedDays: s.missedDays ?? 0,
+              excusedDays: s.excusedDays ?? 0,
+              lateDays: s.lateDays ?? 0,
+              rate: s.rate ?? 100,
+            }));
+            setReportRows(formatted);
+          }
+        }
+      }
+    } catch {
+      // Fallback
+    }
+  };
+
+  const handlePeriodChange = (type: 'MONTH' | 'WEEK' | 'QUARTER' | 'YEAR', periodId: string) => {
+    setPeriodType(type);
+    setSelectedMonth(periodId);
+    loadReport(className, periodId);
+  };
+
   const handleExportCSV = () => {
-    const headers = 'O‘quvchi,Dushanba,Seshanba,Chorshanba,Payshanba,Juma,Shanba,Davomat\n';
-    const rows = reportData.map(
-      (r) => `"${r.student}","${r.mon}","${r.tue}","${r.wed}","${r.thu}","${r.fri}","${r.sat}",${r.rate}%`
+    const headers = '№,O‘quvchi,Dushanba,Seshanba,Chorshanba,Payshanba,Juma,Shanba,Qatnashgan kunlar,Qoldirgan,Kechikkan,Davomat ko‘rsatkichi\n';
+    const rows = reportRows.map((r, idx) =>
+      `${idx + 1},"${r.student}","${r.mon}","${r.tue}","${r.wed}","${r.thu}","${r.fri}","${r.sat}",${r.attendedDays},${r.missedDays},${r.lateDays},${r.rate}%`
     ).join('\n');
 
+    const cleanName = selectedMonthName.replace(/[^a-zA-Z0-9]/g, '_');
     const blob = new Blob([headers + rows], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.setAttribute('download', `davomat_hisoboti_${className}_${period}.csv`);
+    link.setAttribute('download', `davomat_hisoboti_${className}_${cleanName}_2026-2027.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    toast('Hisobot Excel (CSV) fayl sifatida yuklab olindi!', 'success');
+    toast(`${selectedMonthName} davomat hisoboti Excel (CSV) faylida saqlandi!`, 'success');
   };
 
   const handlePrint = () => {
@@ -127,12 +174,16 @@ export default function TeacherReportPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
+            <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-[#e6f0ff] dark:bg-[#1c2c47] text-[#0066cc] dark:text-[#4d9fff] text-xs font-bold mb-2">
+              <Calendar className="w-3.5 h-3.5" />
+              2026–2027 o‘quv yili hisoboti
+            </div>
             <h1 className="text-[28px] font-bold text-[#0b2a5b] dark:text-white flex items-center gap-3">
               <BarChart3 className="w-7 h-7 text-[#0066cc] dark:text-[#4d9fff]" />
               Sinf davomat hisoboti ({className} sinf)
             </h1>
             <p className="text-sm text-[#4a5f82] dark:text-[#9db4dd] mt-1">
-              O‘quvchilarning haftalik, oylik va choraklik davomat statistikasi
+              {selectedMonthName} holatiga ko‘ra saqlangan oylik va choraklik hisobotlar
             </p>
           </div>
 
@@ -148,7 +199,7 @@ export default function TeacherReportPage() {
 
             <Button
               onClick={handleExportCSV}
-              className="flex items-center gap-2 bg-[#0066cc] hover:bg-[#0052a3] text-white"
+              className="flex items-center gap-2 bg-[#0066cc] hover:bg-[#0052a3] text-white shadow-sm"
             >
               <Download className="w-4 h-4" />
               Excel yuklab olish
@@ -163,8 +214,8 @@ export default function TeacherReportPage() {
               <TrendingUp className="w-6 h-6" />
             </div>
             <div>
-              <div className="text-2xl font-bold text-[#0b2a5b] dark:text-white">96%</div>
-              <div className="text-xs text-[#5f7599] dark:text-[#8ea8d6]">Umumiy davomat</div>
+              <div className="text-2xl font-bold text-[#0b2a5b] dark:text-white">{stats.rate}%</div>
+              <div className="text-xs text-[#5f7599] dark:text-[#8ea8d6]">Oylik o‘rtacha davomat</div>
             </div>
           </Card>
 
@@ -173,8 +224,8 @@ export default function TeacherReportPage() {
               <CheckCircle2 className="w-6 h-6" />
             </div>
             <div>
-              <div className="text-2xl font-bold text-[#0b2a5b] dark:text-white">32 ta</div>
-              <div className="text-xs text-[#5f7599] dark:text-[#8ea8d6]">Kelganlar jami</div>
+              <div className="text-2xl font-bold text-[#0b2a5b] dark:text-white">{stats.totalDays} kun</div>
+              <div className="text-xs text-[#5f7599] dark:text-[#8ea8d6]">Jami dars kunlari</div>
             </div>
           </Card>
 
@@ -183,7 +234,7 @@ export default function TeacherReportPage() {
               <XCircle className="w-6 h-6" />
             </div>
             <div>
-              <div className="text-2xl font-bold text-[#0b2a5b] dark:text-white">1 ta</div>
+              <div className="text-2xl font-bold text-[#0b2a5b] dark:text-white">{stats.kelmadi} ta</div>
               <div className="text-xs text-[#5f7599] dark:text-[#8ea8d6]">Sababsiz qoldirish</div>
             </div>
           </Card>
@@ -193,49 +244,77 @@ export default function TeacherReportPage() {
               <Clock className="w-6 h-6" />
             </div>
             <div>
-              <div className="text-2xl font-bold text-[#0b2a5b] dark:text-white">1 ta</div>
+              <div className="text-2xl font-bold text-[#0b2a5b] dark:text-white">{stats.kechikdi} ta</div>
               <div className="text-xs text-[#5f7599] dark:text-[#8ea8d6]">Kechikishlar</div>
             </div>
           </Card>
         </div>
 
-        {/* Filter bar */}
-        <Card className="p-4 bg-white dark:bg-[#141d2e] border-[#e1e8f3] dark:border-[#24324d] flex items-center justify-between">
-          <div className="flex items-center gap-2">
+        {/* Filter bar: O‘tgan oylar va davrlar filtri */}
+        <Card className="p-4 bg-white dark:bg-[#141d2e] border-[#e1e8f3] dark:border-[#24324d] flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-xs font-bold text-[#4a5f82] dark:text-[#9db4dd] mr-1">
+              O‘quv yili davri:
+            </span>
+
+            {/* Oy tanlash dropdown */}
+            <select
+              value={selectedMonth}
+              onChange={(e) => handlePeriodChange('MONTH', e.target.value)}
+              className="px-3 py-1.5 rounded-lg text-xs font-bold bg-[#e6f0ff] dark:bg-[#1c2c47] text-[#0066cc] dark:text-[#4d9fff] border border-[#ccd8e8] dark:border-[#2f4063] focus:outline-hidden cursor-pointer"
+            >
+              <optgroup label="2026-yil oylari">
+                <option value="2026-10">Oktabr 2026 (Joriy oy)</option>
+                <option value="2026-09">Sentabr 2026 (O‘tgan oy)</option>
+                <option value="2026-11">Noyabr 2026</option>
+                <option value="2026-12">Dekabr 2026</option>
+              </optgroup>
+              <optgroup label="2027-yil oylari">
+                <option value="2027-01">Yanvar 2027</option>
+                <option value="2027-02">Fevral 2027</option>
+                <option value="2027-03">Mart 2027</option>
+                <option value="2027-04">Aprel 2027</option>
+                <option value="2027-05">May 2027</option>
+              </optgroup>
+            </select>
+
+            {/* Choraklar va Yillik */}
             <button
-              onClick={() => setPeriod('WEEK')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${
-                period === 'WEEK'
-                  ? 'bg-[#0066cc] text-white'
-                  : 'bg-[#f0f4fa] dark:bg-[#1c2c47] text-[#4a5f82] dark:text-[#9db4dd]'
+              onClick={() => handlePeriodChange('QUARTER', 'QUARTER-1')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                selectedMonth === 'QUARTER-1'
+                  ? 'bg-[#0066cc] text-white shadow-xs'
+                  : 'bg-[#f0f4fa] dark:bg-[#1c2c47] text-[#4a5f82] dark:text-[#9db4dd] hover:bg-[#e1e8f5]'
               }`}
             >
-              Joriy hafta
+              1-chorak (Sentabr–Oktabr)
             </button>
+
             <button
-              onClick={() => setPeriod('MONTH')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${
-                period === 'MONTH'
-                  ? 'bg-[#0066cc] text-white'
-                  : 'bg-[#f0f4fa] dark:bg-[#1c2c47] text-[#4a5f82] dark:text-[#9db4dd]'
+              onClick={() => handlePeriodChange('QUARTER', 'QUARTER-2')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                selectedMonth === 'QUARTER-2'
+                  ? 'bg-[#0066cc] text-white shadow-xs'
+                  : 'bg-[#f0f4fa] dark:bg-[#1c2c47] text-[#4a5f82] dark:text-[#9db4dd] hover:bg-[#e1e8f5]'
               }`}
             >
-              Shu oy
+              2-chorak
             </button>
+
             <button
-              onClick={() => setPeriod('QUARTER')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${
-                period === 'QUARTER'
-                  ? 'bg-[#0066cc] text-white'
-                  : 'bg-[#f0f4fa] dark:bg-[#1c2c47] text-[#4a5f82] dark:text-[#9db4dd]'
+              onClick={() => handlePeriodChange('YEAR', 'YEAR')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                selectedMonth === 'YEAR'
+                  ? 'bg-[#0066cc] text-white shadow-xs'
+                  : 'bg-[#f0f4fa] dark:bg-[#1c2c47] text-[#4a5f82] dark:text-[#9db4dd] hover:bg-[#e1e8f5]'
               }`}
             >
-              1-chorak
+              Yillik (2026–2027)
             </button>
           </div>
 
           <div className="text-xs text-[#5f7599] dark:text-[#8ea8d6]">
-            Shartli belgilar: <span className="font-bold text-[#009944]">K</span> (Keldi), <span className="font-bold text-[#b3261e]">Q</span> (Qoldi), <span className="font-bold text-[#0066cc]">S</span> (Sababli), <span className="font-bold text-[#d97706]">Kch</span> (Kechikdi)
+            Ko‘rsatkich: <span className="font-bold text-[#009944]">K</span> (Keldi), <span className="font-bold text-[#b3261e]">Q</span> (Qoldi), <span className="font-bold text-[#0066cc]">S</span> (Sababli), <span className="font-bold text-[#d97706]">Kch</span> (Kechikdi)
           </div>
         </Card>
 
@@ -246,19 +325,21 @@ export default function TeacherReportPage() {
               <thead>
                 <tr className="bg-[#f8fafc] dark:bg-[#1c2c47] border-b border-[#e1e8f3] dark:border-[#24324d] text-xs font-semibold text-[#4a5f82] dark:text-[#9db4dd]">
                   <th className="py-3 px-4">#</th>
-                  <th className="py-3 px-4">O‘quvchi</th>
-                  <th className="py-3 px-3 text-center">Du (19)</th>
-                  <th className="py-3 px-3 text-center">Se (20)</th>
-                  <th className="py-3 px-3 text-center">Chor (21)</th>
-                  <th className="py-3 px-3 text-center">Pay (22)</th>
-                  <th className="py-3 px-3 text-center">Jum (23)</th>
-                  <th className="py-3 px-3 text-center">Shan (24)</th>
+                  <th className="py-3 px-4">O‘quvchi (F.I.SH)</th>
+                  <th className="py-3 px-3 text-center">Du</th>
+                  <th className="py-3 px-3 text-center">Se</th>
+                  <th className="py-3 px-3 text-center">Chor</th>
+                  <th className="py-3 px-3 text-center">Pay</th>
+                  <th className="py-3 px-3 text-center">Jum</th>
+                  <th className="py-3 px-3 text-center">Shan</th>
+                  <th className="py-3 px-3 text-center">Qatnashgan</th>
+                  <th className="py-3 px-3 text-center">Qoldirgan</th>
                   <th className="py-3 px-4 text-center">Davomat %</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#edf2f7] dark:divide-[#1e2c45]">
-                {REPORT_DATA.map((row, idx) => (
-                  <tr key={idx} className="hover:bg-[#f8fafc] dark:hover:bg-[#172236] transition-colors">
+                {reportRows.map((row, idx) => (
+                  <tr key={row.id || idx} className="hover:bg-[#f8fafc] dark:hover:bg-[#172236] transition-colors">
                     <td className="py-3.5 px-4 text-xs font-bold text-[#7e95b8]">{idx + 1}</td>
                     <td className="py-3.5 px-4 font-bold text-[#0b2a5b] dark:text-white">{row.student}</td>
                     <td className="py-3.5 px-3 text-center">{getStatusBadge(row.mon)}</td>
@@ -267,8 +348,10 @@ export default function TeacherReportPage() {
                     <td className="py-3.5 px-3 text-center">{getStatusBadge(row.thu)}</td>
                     <td className="py-3.5 px-3 text-center">{getStatusBadge(row.fri)}</td>
                     <td className="py-3.5 px-3 text-center">{getStatusBadge(row.sat)}</td>
+                    <td className="py-3.5 px-3 text-center font-semibold text-[#009944]">{row.attendedDays} kun</td>
+                    <td className="py-3.5 px-3 text-center font-semibold text-[#b3261e]">{row.missedDays} kun</td>
                     <td className="py-3.5 px-4 text-center">
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-[#e6fff0] dark:bg-[#163824] text-[#009944] dark:text-[#33cc77]">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#e6fff0] dark:bg-[#163824] text-[#009944] dark:text-[#33cc77]">
                         {row.rate}%
                       </span>
                     </td>

@@ -9,7 +9,7 @@ import { StatCard } from '@/components/ui/StatCard';
 import { StatusButton } from '@/components/ui/StatusButton';
 import { useToast } from '@/components/ui/Toast';
 import { Role, AttendanceStatus } from '@neom/shared';
-import { Send, CheckCircle2 } from 'lucide-react';
+import { Send, CheckCircle2, Calendar } from 'lucide-react';
 
 interface StudentAttendance {
   id: string;
@@ -25,7 +25,7 @@ export default function TeacherAttendancePage() {
   const [classId, setClassId] = useState<string>('class-uuid-1');
   const [teacherName, setTeacherName] = useState('Qodirov Jamshid');
 
-  const todayStr = new Date().toISOString().split('T')[0];
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
 
   const [students, setStudents] = useState<StudentAttendance[]>([
     { id: '1', name: 'Aliyev Anvar', status: AttendanceStatus.KELDI },
@@ -40,7 +40,7 @@ export default function TeacherAttendancePage() {
   useEffect(() => {
     async function fetchMyClass() {
       try {
-        const res = await fetch(`/api/attendance/my-class?date=${todayStr}`, {
+        const res = await fetch(`/api/attendance/my-class?date=${selectedDate}`, {
           credentials: 'include',
         });
         if (res.ok) {
@@ -48,7 +48,7 @@ export default function TeacherAttendancePage() {
           if (data.className) setClassName(data.className.includes('sinf') ? data.className : `${data.className} sinf`);
           if (data.classId) setClassId(data.classId);
           if (data.teacherName) setTeacherName(data.teacherName);
-          if (data.isSubmitted) setIsSubmitted(true);
+          setIsSubmitted(!!data.isSubmitted);
           if (Array.isArray(data.students) && data.students.length > 0) {
             setStudents(data.students);
           }
@@ -59,7 +59,7 @@ export default function TeacherAttendancePage() {
     }
 
     fetchMyClass();
-  }, [todayStr]);
+  }, [selectedDate]);
 
   const handleStatusChange = async (id: string, newStatus: AttendanceStatus) => {
     setStudents((prev) =>
@@ -75,7 +75,7 @@ export default function TeacherAttendancePage() {
         body: JSON.stringify({
           studentId: id,
           classId: classId,
-          date: todayStr,
+          date: selectedDate,
           status: newStatus,
         }),
       });
@@ -98,7 +98,7 @@ export default function TeacherAttendancePage() {
         credentials: 'include',
         body: JSON.stringify({
           classId,
-          date: todayStr,
+          date: selectedDate,
         }),
       });
 
@@ -137,7 +137,19 @@ export default function TeacherAttendancePage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
+          {/* Sana tanlash filtri */}
+          <div className="flex items-center gap-2 bg-white dark:bg-[#141d2e] px-3 py-2 rounded-xl border border-[#ccd8e8] dark:border-[#24324d] shadow-xs">
+            <Calendar className="w-4 h-4 text-[#0066cc] dark:text-[#4d9fff]" />
+            <span className="text-xs font-semibold text-[#4a5f82] dark:text-[#9db4dd]">Sana:</span>
+            <input
+              type="date"
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+              className="text-xs font-bold text-[#0b2a5b] dark:text-white bg-transparent focus:outline-hidden cursor-pointer"
+            />
+          </div>
+
           <Button
             variant="primary"
             onClick={handleSubmit}
