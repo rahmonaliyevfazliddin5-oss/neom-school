@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PanelShell } from '@/components/layout/PanelShell';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -11,7 +11,6 @@ import {
   Users,
   Search,
   Plus,
-  Edit2,
   Trash2,
   Eye,
   CheckCircle2,
@@ -19,6 +18,11 @@ import {
   DoorOpen,
   GraduationCap,
   X,
+  KeyRound,
+  Copy,
+  Check,
+  Shield,
+  EyeOff,
 } from 'lucide-react';
 
 interface ClassItem {
@@ -27,6 +31,8 @@ interface ClassItem {
   grade: number;
   letter: string;
   teacher: string;
+  teacherLogin?: string;
+  teacherPassword?: string;
   studentsCount: number;
   room: string;
   attendanceRate: number;
@@ -41,6 +47,8 @@ const INITIAL_CLASSES: ClassItem[] = [
     grade: 1,
     letter: 'A',
     teacher: 'Qodirov Jamshid Baxromovich',
+    teacherLogin: 'admin3',
+    teacherPassword: 'admin3',
     studentsCount: 26,
     room: '101-xona',
     attendanceRate: 98,
@@ -53,6 +61,8 @@ const INITIAL_CLASSES: ClassItem[] = [
     grade: 1,
     letter: 'D',
     teacher: 'Ahmedova Nilufar Shuxratovna',
+    teacherLogin: 'nilufar_ustoz',
+    teacherPassword: 'teacher123',
     studentsCount: 24,
     room: '102-xona',
     attendanceRate: 96,
@@ -65,6 +75,8 @@ const INITIAL_CLASSES: ClassItem[] = [
     grade: 2,
     letter: 'A',
     teacher: 'Usmonov Otabek Mirzohidovich',
+    teacherLogin: 'otabek_ustoz',
+    teacherPassword: 'teacher123',
     studentsCount: 25,
     room: '103-xona',
     attendanceRate: 100,
@@ -77,6 +89,8 @@ const INITIAL_CLASSES: ClassItem[] = [
     grade: 2,
     letter: 'B',
     teacher: 'Nodirova Dilnoza Alisherovna',
+    teacherLogin: 'admin2',
+    teacherPassword: 'admin2',
     studentsCount: 23,
     room: '104-xona',
     attendanceRate: 95,
@@ -89,6 +103,8 @@ const INITIAL_CLASSES: ClassItem[] = [
     grade: 3,
     letter: 'A',
     teacher: 'Sultonov Bekzod Xurramovich',
+    teacherLogin: 'bekzod_ustoz',
+    teacherPassword: 'teacher123',
     studentsCount: 27,
     room: '201-xona',
     attendanceRate: 97,
@@ -101,6 +117,8 @@ const INITIAL_CLASSES: ClassItem[] = [
     grade: 5,
     letter: 'B',
     teacher: 'G‘aniyeva Feruza Akbarovna',
+    teacherLogin: 'feruza_ustoz',
+    teacherPassword: 'teacher123',
     studentsCount: 28,
     room: '205-xona',
     attendanceRate: 96,
@@ -113,6 +131,8 @@ const INITIAL_CLASSES: ClassItem[] = [
     grade: 9,
     letter: 'A',
     teacher: 'Qodirov Jamshid Baxromovich',
+    teacherLogin: 'admin3',
+    teacherPassword: 'admin3',
     studentsCount: 26,
     room: '302-xona',
     attendanceRate: 94,
@@ -125,6 +145,8 @@ const INITIAL_CLASSES: ClassItem[] = [
     grade: 11,
     letter: 'A',
     teacher: 'Usmonov Otabek Mirzohidovich',
+    teacherLogin: 'otabek_ustoz',
+    teacherPassword: 'teacher123',
     studentsCount: 22,
     room: '308-xona',
     attendanceRate: 98,
@@ -137,6 +159,8 @@ const INITIAL_CLASSES: ClassItem[] = [
     grade: 11,
     letter: 'B',
     teacher: 'Ahmedova Nilufar Shuxratovna',
+    teacherLogin: 'nilufar_ustoz',
+    teacherPassword: 'teacher123',
     studentsCount: 24,
     room: '309-xona',
     attendanceRate: 92,
@@ -154,20 +178,58 @@ export default function ZavuchClassesPage() {
   // Modal states
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [viewStudentsClass, setViewStudentsClass] = useState<ClassItem | null>(null);
+  const [createdSuccessInfo, setCreatedSuccessInfo] = useState<{
+    className: string;
+    teacher: string;
+    login: string;
+    pass: string;
+  } | null>(null);
   const [newStudentName, setNewStudentName] = useState('');
 
   // Add Class Form State
-  const [newGrade, setNewGrade] = useState('1');
-  const [newLetter, setNewLetter] = useState('A');
-  const [newTeacher, setNewTeacher] = useState('Qodirov Jamshid Baxromovich');
-  const [newRoom, setNewRoom] = useState('105-xona');
+  const [newGrade, setNewGrade] = useState('7');
+  const [newLetter, setNewLetter] = useState('B');
+  const [newTeacher, setNewTeacher] = useState('Alimova Zarina Bahodirovna');
+  const [newTeacherLogin, setNewTeacherLogin] = useState('zarina_ustoz');
+  const [newTeacherPassword, setNewTeacherPassword] = useState('ustoz2026');
+  const [showPassword, setShowPassword] = useState(false);
+  const [newRoom, setNewRoom] = useState('204-xona');
   const [newCount, setNewCount] = useState('25');
+  const [copied, setCopied] = useState(false);
+
+  // Load custom classes from API on mount
+  useEffect(() => {
+    fetch('/api/classes')
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data?.success && Array.isArray(data.classes) && data.classes.length > 0) {
+          // Merge custom classes avoiding duplicate names
+          const customNames = new Set(data.classes.map((c: any) => c.name.toLowerCase()));
+          const filteredInitial = INITIAL_CLASSES.filter(
+            (c) => !customNames.has(c.name.toLowerCase())
+          );
+          setClasses([...data.classes, ...filteredInitial]);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const handleGradeChange = (g: string) => {
+    setNewGrade(g);
+    setNewTeacherLogin(`ustoz_${g}${newLetter.toLowerCase()}`);
+  };
+
+  const handleLetterChange = (l: string) => {
+    setNewLetter(l);
+    setNewTeacherLogin(`ustoz_${newGrade}${l.toLowerCase()}`);
+  };
 
   const filteredClasses = classes.filter((c) => {
     const matchesSearch =
       c.name.toLowerCase().includes(search.toLowerCase()) ||
       c.teacher.toLowerCase().includes(search.toLowerCase()) ||
-      c.room.toLowerCase().includes(search.toLowerCase());
+      c.room.toLowerCase().includes(search.toLowerCase()) ||
+      (c.teacherLogin && c.teacherLogin.toLowerCase().includes(search.toLowerCase()));
 
     if (!matchesSearch) return false;
 
@@ -182,32 +244,68 @@ export default function ZavuchClassesPage() {
   const middleCount = classes.filter((c) => c.grade >= 5 && c.grade <= 9).length;
   const highCount = classes.filter((c) => c.grade >= 10 && c.grade <= 11).length;
 
-  const handleCreateClass = (e: React.FormEvent) => {
+  const handleCreateClass = async (e: React.FormEvent) => {
     e.preventDefault();
     const className = `${newGrade}-${newLetter.toUpperCase()}`;
 
-    // Check duplicate
-    if (classes.some((c) => c.name.toLowerCase() === className.toLowerCase())) {
-      toast(`${className} sinfi allaqachon mavjud!`, 'error');
+    if (!newTeacher.trim()) {
+      toast('Sinf rahbari ismini kiriting', 'error');
       return;
     }
 
-    const created: ClassItem = {
-      id: `c-${Date.now()}`,
-      name: className,
-      grade: parseInt(newGrade, 10),
-      letter: newLetter.toUpperCase(),
-      teacher: newTeacher,
-      studentsCount: parseInt(newCount, 10) || 25,
-      room: newRoom,
-      attendanceRate: 100,
-      isSubmitted: false,
-      students: ['1-o‘quvchi', '2-o‘quvchi', '3-o‘quvchi'],
-    };
+    if (!newTeacherLogin.trim() || !newTeacherPassword.trim()) {
+      toast('Sinf rahbari uchun login va parolni kiriting', 'error');
+      return;
+    }
 
-    setClasses([created, ...classes]);
-    setIsAddModalOpen(false);
-    toast(`${className} sinfi muvaffaqiyatli qo‘shildi!`, 'success');
+    try {
+      const res = await fetch('/api/classes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          grade: parseInt(newGrade, 10),
+          letter: newLetter,
+          room: newRoom,
+          studentsCount: parseInt(newCount, 10) || 25,
+          teacherName: newTeacher.trim(),
+          teacherLogin: newTeacherLogin.trim(),
+          teacherPassword: newTeacherPassword.trim(),
+          createTeacherAccount: true,
+        }),
+      });
+
+      const data = await res.json().catch(() => null);
+
+      if (!res.ok || !data?.success) {
+        toast(data?.message || 'Sinf yaratishda xatolik yuz berdi', 'error');
+        return;
+      }
+
+      const created: ClassItem = data.class;
+      setClasses([created, ...classes.filter((c) => c.name.toLowerCase() !== className.toLowerCase())]);
+      setIsAddModalOpen(false);
+
+      // Open Success Credentials Display
+      setCreatedSuccessInfo({
+        className,
+        teacher: newTeacher.trim(),
+        login: newTeacherLogin.trim(),
+        pass: newTeacherPassword.trim(),
+      });
+
+      toast(`${className} sinfi va o‘qituvchi akkaunti 100% muvaffaqiyatli yaratildi!`, 'success');
+    } catch {
+      toast('Server bilan aloqada xatolik', 'error');
+    }
+  };
+
+  const handleCopyCredentials = () => {
+    if (!createdSuccessInfo) return;
+    const text = `Neom School — Sinf rahbari kirish ma’lumotlari:\nSinf: ${createdSuccessInfo.className}\nUstoz: ${createdSuccessInfo.teacher}\nLogin: ${createdSuccessInfo.login}\nParol: ${createdSuccessInfo.pass}\nSaytga kirish: http://localhost:3000/kirish`;
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+    toast('Login va parol nusxalandi!', 'success');
   };
 
   const handleDeleteClass = (id: string, name: string) => {
@@ -262,7 +360,7 @@ export default function ZavuchClassesPage() {
               Maktab sinflari
             </h1>
             <p className="text-sm text-[#4a5f82] dark:text-[#9db4dd] mt-1">
-              1-sinfdan 11-sinfgacha bo‘lgan barcha sinflar, o‘quvchilar va sinf rahbarlari boshqaruvi
+              Sinflarni yaratish, sinf rahbarlarini tayinlash va ularga login-parol berish
             </p>
           </div>
 
@@ -271,7 +369,7 @@ export default function ZavuchClassesPage() {
             className="flex items-center gap-2 bg-[#0066cc] hover:bg-[#0052a3] text-white shadow-sm"
           >
             <Plus className="w-4 h-4" />
-            Yangi sinf ochish
+            Yangi sinf va sinf rahbari yaratish
           </Button>
         </div>
 
@@ -363,11 +461,11 @@ export default function ZavuchClassesPage() {
             </button>
           </div>
 
-          <div className="relative w-full md:w-72">
+          <div className="relative w-full md:w-80">
             <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#7e95b8]" />
             <input
               type="text"
-              placeholder="Sinf, ustoz yoki xonani qidirish..."
+              placeholder="Sinf, ustoz yoki loginni qidirish..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full pl-9 pr-4 py-2 rounded-lg border border-[#ccd8e8] dark:border-[#2f4063] bg-[#f8fafc] dark:bg-[#0f172a] text-sm text-[#0b2a5b] dark:text-white placeholder-[#7e95b8] focus:outline-hidden focus:border-[#0066cc]"
@@ -405,6 +503,21 @@ export default function ZavuchClassesPage() {
                   {item.teacher}
                 </div>
                 <div className="text-xs text-[#5f7599] dark:text-[#8ea8d6]">Sinf rahbari</div>
+
+                {/* Login & Password display for homeroom teacher */}
+                {item.teacherLogin && (
+                  <div className="mt-3 p-2 rounded-lg bg-[#f0f5fc] dark:bg-[#1c2c47] border border-[#d3e2f5] dark:border-[#2d4063] flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-1.5 text-[#0066cc] dark:text-[#4d9fff]">
+                      <KeyRound className="w-3.5 h-3.5 shrink-0" />
+                      <span>Login: <strong className="font-mono text-[#0b2a5b] dark:text-white">{item.teacherLogin}</strong></span>
+                    </div>
+                    {item.teacherPassword && (
+                      <span className="text-[#5f7599] dark:text-[#8ea8d6] font-mono">
+                        Parol: <strong className="text-[#0b2a5b] dark:text-white">{item.teacherPassword}</strong>
+                      </span>
+                    )}
+                  </div>
+                )}
 
                 <div className="mt-4 pt-3 border-t border-[#edf2f7] dark:border-[#1e2c45] grid grid-cols-2 gap-2 text-xs">
                   <div className="flex items-center gap-1.5 text-[#4a5f82] dark:text-[#9db4dd]">
@@ -448,15 +561,20 @@ export default function ZavuchClassesPage() {
           </div>
         )}
 
-        {/* Modal: Yangi sinf qo'shish */}
+        {/* Modal: Yangi sinf va Sinf rahbari yaratish */}
         {isAddModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-            <Card className="w-full max-w-md p-6 bg-white dark:bg-[#141d2e] border-[#ccd8e8] dark:border-[#24324d] shadow-xl">
-              <div className="flex items-center justify-between pb-4 border-b border-[#edf2f7] dark:border-[#24324d]">
-                <h3 className="text-lg font-bold text-[#0b2a5b] dark:text-white flex items-center gap-2">
-                  <Plus className="w-5 h-5 text-[#0066cc]" />
-                  Yangi sinf ochish
-                </h3>
+            <Card className="w-full max-w-lg p-6 bg-white dark:bg-[#141d2e] border-[#ccd8e8] dark:border-[#24324d] shadow-xl max-h-[92vh] flex flex-col">
+              <div className="flex items-center justify-between pb-4 border-b border-[#edf2f7] dark:border-[#24324d] shrink-0">
+                <div>
+                  <h3 className="text-lg font-bold text-[#0b2a5b] dark:text-white flex items-center gap-2">
+                    <Plus className="w-5 h-5 text-[#0066cc]" />
+                    Yangi sinf va sinf rahbari yaratish
+                  </h3>
+                  <p className="text-xs text-[#5f7599] dark:text-[#8ea8d6] mt-0.5">
+                    Sinf rahbari uchun login-parol avtomatik shakllantiriladi va 100% ishlaydi
+                  </p>
+                </div>
                 <button
                   onClick={() => setIsAddModalOpen(false)}
                   className="text-[#7e95b8] hover:text-[#0b2a5b] dark:hover:text-white"
@@ -465,86 +583,144 @@ export default function ZavuchClassesPage() {
                 </button>
               </div>
 
-              <form onSubmit={handleCreateClass} className="mt-4 flex flex-col gap-4">
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="text-xs font-semibold text-[#4a5f82] dark:text-[#9db4dd] mb-1 block">
-                      Sinf bosqichi (1-11)
-                    </label>
-                    <select
-                      value={newGrade}
-                      onChange={(e) => setNewGrade(e.target.value)}
-                      className="w-full px-3 py-2 rounded-lg border border-[#ccd8e8] dark:border-[#2f4063] bg-white dark:bg-[#0f172a] text-sm text-[#0b2a5b] dark:text-white"
-                    >
-                      {Array.from({ length: 11 }, (_, i) => i + 1).map((g) => (
-                        <option key={g} value={g}>
-                          {g}-sinf
-                        </option>
-                      ))}
-                    </select>
+              <form onSubmit={handleCreateClass} className="mt-4 flex flex-col gap-4 overflow-y-auto flex-1 pr-1">
+                {/* 1. Class parameters */}
+                <div className="p-3.5 rounded-xl bg-[#f8fafc] dark:bg-[#1c2c47] border border-[#e1e8f3] dark:border-[#2d4063] flex flex-col gap-3">
+                  <span className="text-xs font-bold text-[#0066cc] dark:text-[#4d9fff] uppercase tracking-wider">
+                    1. Sinf ma’lumotlari
+                  </span>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-xs font-semibold text-[#4a5f82] dark:text-[#9db4dd] mb-1 block">
+                        Sinf bosqichi (1-11)
+                      </label>
+                      <select
+                        value={newGrade}
+                        onChange={(e) => handleGradeChange(e.target.value)}
+                        className="w-full px-3 py-2 rounded-lg border border-[#ccd8e8] dark:border-[#2f4063] bg-white dark:bg-[#0f172a] text-sm text-[#0b2a5b] dark:text-white"
+                      >
+                        {Array.from({ length: 11 }, (_, i) => i + 1).map((g) => (
+                          <option key={g} value={g}>
+                            {g}-sinf
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-semibold text-[#4a5f82] dark:text-[#9db4dd] mb-1 block">
+                        Sinf harfi (A, B, D, E)
+                      </label>
+                      <input
+                        type="text"
+                        maxLength={2}
+                        value={newLetter}
+                        onChange={(e) => handleLetterChange(e.target.value)}
+                        className="w-full px-3 py-2 rounded-lg border border-[#ccd8e8] dark:border-[#2f4063] bg-white dark:bg-[#0f172a] text-sm text-[#0b2a5b] dark:text-white font-bold uppercase"
+                        required
+                      />
+                    </div>
                   </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-xs font-semibold text-[#4a5f82] dark:text-[#9db4dd] mb-1 block">
+                        Xona raqami
+                      </label>
+                      <input
+                        type="text"
+                        value={newRoom}
+                        onChange={(e) => setNewRoom(e.target.value)}
+                        placeholder="204-xona"
+                        className="w-full px-3 py-2 rounded-lg border border-[#ccd8e8] dark:border-[#2f4063] bg-white dark:bg-[#0f172a] text-sm text-[#0b2a5b] dark:text-white"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-semibold text-[#4a5f82] dark:text-[#9db4dd] mb-1 block">
+                        O‘quvchilar soni
+                      </label>
+                      <input
+                        type="number"
+                        min={1}
+                        max={45}
+                        value={newCount}
+                        onChange={(e) => setNewCount(e.target.value)}
+                        className="w-full px-3 py-2 rounded-lg border border-[#ccd8e8] dark:border-[#2f4063] bg-white dark:bg-[#0f172a] text-sm text-[#0b2a5b] dark:text-white"
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* 2. Homeroom teacher assignment & credentials */}
+                <div className="p-3.5 rounded-xl bg-[#f0f7ff] dark:bg-[#162a4a] border border-[#d0e4ff] dark:border-[#254270] flex flex-col gap-3">
+                  <span className="text-xs font-bold text-[#0066cc] dark:text-[#4d9fff] uppercase tracking-wider flex items-center gap-1.5">
+                    <Shield className="w-3.5 h-3.5" />
+                    2. Sinf rahbari va Kirish login/paroli
+                  </span>
 
                   <div>
                     <label className="text-xs font-semibold text-[#4a5f82] dark:text-[#9db4dd] mb-1 block">
-                      Harfi (A, B, D, E)
+                      Sinf rahbari (Ustoz F.I.SH)
                     </label>
                     <input
                       type="text"
-                      maxLength={2}
-                      value={newLetter}
-                      onChange={(e) => setNewLetter(e.target.value)}
-                      className="w-full px-3 py-2 rounded-lg border border-[#ccd8e8] dark:border-[#2f4063] bg-white dark:bg-[#0f172a] text-sm text-[#0b2a5b] dark:text-white font-bold uppercase"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="text-xs font-semibold text-[#4a5f82] dark:text-[#9db4dd] mb-1 block">
-                    Sinf rahbari (Ustoz)
-                  </label>
-                  <input
-                    type="text"
-                    value={newTeacher}
-                    onChange={(e) => setNewTeacher(e.target.value)}
-                    placeholder="Masalan: Ahmedova Nilufar"
-                    className="w-full px-3 py-2 rounded-lg border border-[#ccd8e8] dark:border-[#2f4063] bg-white dark:bg-[#0f172a] text-sm text-[#0b2a5b] dark:text-white"
-                    required
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="text-xs font-semibold text-[#4a5f82] dark:text-[#9db4dd] mb-1 block">
-                      Xona raqami
-                    </label>
-                    <input
-                      type="text"
-                      value={newRoom}
-                      onChange={(e) => setNewRoom(e.target.value)}
-                      placeholder="104-xona"
-                      className="w-full px-3 py-2 rounded-lg border border-[#ccd8e8] dark:border-[#2f4063] bg-white dark:bg-[#0f172a] text-sm text-[#0b2a5b] dark:text-white"
+                      value={newTeacher}
+                      onChange={(e) => setNewTeacher(e.target.value)}
+                      placeholder="Masalan: Alimova Zarina Bahodirovna"
+                      className="w-full px-3 py-2 rounded-lg border border-[#ccd8e8] dark:border-[#2f4063] bg-white dark:bg-[#0f172a] text-sm text-[#0b2a5b] dark:text-white font-medium"
                       required
                     />
                   </div>
 
-                  <div>
-                    <label className="text-xs font-semibold text-[#4a5f82] dark:text-[#9db4dd] mb-1 block">
-                      O‘quvchilar soni
-                    </label>
-                    <input
-                      type="number"
-                      min={1}
-                      max={45}
-                      value={newCount}
-                      onChange={(e) => setNewCount(e.target.value)}
-                      className="w-full px-3 py-2 rounded-lg border border-[#ccd8e8] dark:border-[#2f4063] bg-white dark:bg-[#0f172a] text-sm text-[#0b2a5b] dark:text-white"
-                      required
-                    />
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-xs font-semibold text-[#4a5f82] dark:text-[#9db4dd] mb-1 block">
+                        Tizimga kirish logini
+                      </label>
+                      <input
+                        type="text"
+                        value={newTeacherLogin}
+                        onChange={(e) => setNewTeacherLogin(e.target.value)}
+                        placeholder="zarina_ustoz"
+                        className="w-full px-3 py-2 rounded-lg border border-[#ccd8e8] dark:border-[#2f4063] bg-white dark:bg-[#0f172a] text-sm font-mono text-[#0b2a5b] dark:text-white"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-semibold text-[#4a5f82] dark:text-[#9db4dd] mb-1 block">
+                        Tizimga kirish paroli
+                      </label>
+                      <div className="relative">
+                        <input
+                          type={showPassword ? 'text' : 'password'}
+                          value={newTeacherPassword}
+                          onChange={(e) => setNewTeacherPassword(e.target.value)}
+                          placeholder="ustoz2026"
+                          className="w-full pl-3 pr-8 py-2 rounded-lg border border-[#ccd8e8] dark:border-[#2f4063] bg-white dark:bg-[#0f172a] text-sm font-mono text-[#0b2a5b] dark:text-white"
+                          required
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#7e95b8] hover:text-[#0b2a5b]"
+                        >
+                          {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="text-[11px] text-[#5f7599] dark:text-[#8ea8d6]">
+                    * Ushbu login va parol bilan o‘qituvchi <strong>/kirish</strong> sahifasi orqali tizimga kiradi va faqat o‘z sinfining davomatini boshqaradi.
                   </div>
                 </div>
 
-                <div className="flex items-center justify-end gap-3 pt-3 border-t border-[#edf2f7] dark:border-[#24324d] mt-2">
+                <div className="flex items-center justify-end gap-3 pt-3 border-t border-[#edf2f7] dark:border-[#24324d] mt-2 shrink-0">
                   <Button
                     type="button"
                     variant="outline"
@@ -553,10 +729,67 @@ export default function ZavuchClassesPage() {
                     Bekor qilish
                   </Button>
                   <Button type="submit" className="bg-[#0066cc] text-white">
-                    Sinfni yaratish
+                    Sinf va Ustoz hisobini yaratish
                   </Button>
                 </div>
               </form>
+            </Card>
+          </div>
+        )}
+
+        {/* Modal: Muvaffaqiyatli yaratilgan Login va Parol (Kopiya uchun) */}
+        {createdSuccessInfo && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+            <Card className="w-full max-w-md p-6 bg-white dark:bg-[#141d2e] border-[#009944] dark:border-[#163824] shadow-2xl text-center">
+              <div className="w-14 h-14 mx-auto rounded-full bg-[#e6fff0] dark:bg-[#163824] text-[#009944] flex items-center justify-center mb-4">
+                <CheckCircle2 className="w-8 h-8" />
+              </div>
+
+              <h3 className="text-xl font-bold text-[#0b2a5b] dark:text-white">
+                Sinf va Ustoz akkaunti yaratildi!
+              </h3>
+              <p className="text-xs text-[#5f7599] dark:text-[#8ea8d6] mt-1 mb-5">
+                Ushbu login va parolni sinf rahbariga berishingiz mumkin:
+              </p>
+
+              <div className="p-4 rounded-xl bg-[#f8fafc] dark:bg-[#1c2c47] border border-[#e1e8f3] dark:border-[#2d4063] text-left flex flex-col gap-2.5 text-sm mb-5">
+                <div className="flex justify-between border-b border-[#edf2f7] dark:border-[#253754] pb-2">
+                  <span className="text-[#5f7599] dark:text-[#8ea8d6]">Sinf:</span>
+                  <span className="font-bold text-[#0066cc] dark:text-[#4d9fff]">{createdSuccessInfo.className} sinf</span>
+                </div>
+                <div className="flex justify-between border-b border-[#edf2f7] dark:border-[#253754] pb-2">
+                  <span className="text-[#5f7599] dark:text-[#8ea8d6]">Sinf rahbari:</span>
+                  <span className="font-bold text-[#0b2a5b] dark:text-white">{createdSuccessInfo.teacher}</span>
+                </div>
+                <div className="flex justify-between border-b border-[#edf2f7] dark:border-[#253754] pb-2">
+                  <span className="text-[#5f7599] dark:text-[#8ea8d6]">Login:</span>
+                  <span className="font-mono font-bold text-[#0b2a5b] dark:text-white bg-white dark:bg-[#0f172a] px-2 py-0.5 rounded border border-[#ccd8e8] dark:border-[#2f4063]">
+                    {createdSuccessInfo.login}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-[#5f7599] dark:text-[#8ea8d6]">Parol:</span>
+                  <span className="font-mono font-bold text-[#0b2a5b] dark:text-white bg-white dark:bg-[#0f172a] px-2 py-0.5 rounded border border-[#ccd8e8] dark:border-[#2f4063]">
+                    {createdSuccessInfo.pass}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <Button
+                  onClick={handleCopyCredentials}
+                  className="flex-1 flex items-center justify-center gap-2 bg-[#0066cc] hover:bg-[#0052a3] text-white"
+                >
+                  {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                  {copied ? 'Nusxalandi!' : 'Ma’lumotlarni nusxalash'}
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setCreatedSuccessInfo(null)}
+                >
+                  Yopish
+                </Button>
+              </div>
             </Card>
           </div>
         )}

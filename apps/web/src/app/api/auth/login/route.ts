@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
+import fs from 'fs';
+import path from 'path';
 
 interface UserAccount {
   id: string;
@@ -8,6 +10,35 @@ interface UserAccount {
   role: 'DIRECTOR' | 'ZAVUCH' | 'TEACHER';
   name: string;
   redirectUrl: string;
+}
+
+function getCustomUsers(): UserAccount[] {
+  try {
+    const dataDir = path.join(process.cwd(), 'data');
+    const filePath = path.join(dataDir, 'custom-users.json');
+    if (fs.existsSync(filePath)) {
+      const content = fs.readFileSync(filePath, 'utf-8');
+      const list = JSON.parse(content || '[]');
+      if (Array.isArray(list)) {
+        return list.map((item: any) => ({
+          id: item.id || `custom-${Date.now()}`,
+          logins: [item.login],
+          passwords: [item.password],
+          role: item.role || 'TEACHER',
+          name: item.fullName || 'Ustoz',
+          redirectUrl:
+            item.role === 'DIRECTOR'
+              ? '/panel/direktor'
+              : item.role === 'ZAVUCH'
+                ? '/panel/zavuch'
+                : '/panel/ustoz',
+        }));
+      }
+    }
+  } catch {
+    // Ignore read error
+  }
+  return [];
 }
 
 const USERS: UserAccount[] = [
@@ -65,7 +96,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const matchedUser = USERS.find(
+    const allUsers = [...USERS, ...getCustomUsers()];
+
+    const matchedUser = allUsers.find(
       (u) =>
         u.logins.map((l) => l.toLowerCase().normalize('NFKC')).includes(rawLogin) &&
         u.passwords.includes(rawPassword)

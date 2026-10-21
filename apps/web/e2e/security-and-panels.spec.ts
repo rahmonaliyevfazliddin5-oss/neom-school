@@ -40,14 +40,28 @@ test.describe('NEOM School 3 ta panel va xavfsizlik tizimi E2E testlari', () => 
     await expect(page.locator('h1')).toContainText('Bugungi davomat');
   });
 
-  test('3. O‘qituvchi login: admin3 / parol: admin3 -> /panel/ustoz ochiladi', async ({ page }) => {
+  test('3. O‘qituvchi login: admin3 / parol: admin3 -> Davomat, Sinflarim va Hisobot to‘liq ishlaydi', async ({ page }) => {
     await page.goto('/kirish');
     await page.fill('input[type="text"]', 'admin3');
     await page.fill('input[type="password"]', 'admin3');
     await page.click('button[type="submit"]');
 
+    // 1. Davomat jurnali
     await page.waitForURL('**/panel/ustoz', { timeout: 10000 });
     await expect(page.locator('h1')).toContainText('Kunlik davomat');
+
+    // 2. Sinflarim bo'limi
+    await page.click('aside a[href="/panel/ustoz/sinflar"]');
+    await page.waitForURL('**/panel/ustoz/sinflar');
+    await expect(page.locator('h1')).toContainText('Mening sinflarim');
+    await expect(page.locator('text=Aliyev Anvar').first()).toBeVisible();
+
+    // 3. Hisobot bo'limi
+    await page.click('aside a[href="/panel/ustoz/hisobot"]');
+    await page.waitForURL('**/panel/ustoz/hisobot');
+    await expect(page.locator('h1')).toContainText('Sinf davomat hisoboti');
+    await expect(page.locator('button:has-text("Excel yuklab olish")')).toBeVisible();
+    await expect(page.locator('button:has-text("Chop etish")')).toBeVisible();
   });
 
   test('4. XAVFSIZLIK: Ruxsatsiz /panel/* ga kirish 404 sahifa qaytaradi (panel mavjud emasdek ko‘rinadi)', async ({ page }) => {
