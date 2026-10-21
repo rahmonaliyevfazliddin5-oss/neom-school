@@ -101,7 +101,10 @@ async function main() {
     });
   }
 
-  // 2. Users: Direktor, Zamdirektor (Zavuch), O'qituvchi
+  // 2. Users: Direktor (admin1), Zamdirektor (admin2), O'qituvchi (admin3)
+  const admin1 = await seedUser('admin1', 'Rustamov Shavkat Akbarovich', Role.DIRECTOR, directorHash, false);
+  const admin2 = await seedUser('admin2', 'Nodirova Dilnoza Alisherovna', Role.ZAVUCH, zavuchHash, false);
+  const admin3 = await seedUser('admin3', 'Qodirov Jamshid Baxromovich', Role.TEACHER, teacherHash, false);
   const director = await seedUser('director', 'Rustamov Shavkat Akbarovich', Role.DIRECTOR, directorHash, false);
   const direktor = await seedUser('direktor', 'Rustamov Shavkat Akbarovich', Role.DIRECTOR, directorHash, false);
   const zavuch = await seedUser('zavuch', 'Nodirova Dilnoza Alisherovna', Role.ZAVUCH, zavuchHash, false);

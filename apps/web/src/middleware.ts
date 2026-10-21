@@ -23,12 +23,27 @@ function parseJwtPayload(token: string) {
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Protect all /panel/* routes
-  if (pathname.startsWith('/panel')) {
+  // Protect all /panel and /panel/* routes
+  if (pathname === '/panel' || pathname.startsWith('/panel/')) {
+    // 1. Strict whitelist: Exactly 3 panels exist in NEOM School (+ account settings)
+    // No other panels (e.g. /panel/admin, /panel/manager, /panel/boshqa) exist or can be accessed.
+    const isAllowedPanel =
+      pathname.startsWith('/panel/direktor') ||
+      pathname.startsWith('/panel/zavuch') ||
+      pathname.startsWith('/panel/ustoz') ||
+      pathname.startsWith('/panel/parol-login');
+
+    if (!isAllowedPanel) {
+      // Return 404 so unauthorized/fake paths appear completely non-existent
+      return NextResponse.rewrite(new URL('/not-found', request.url), {
+        status: 404,
+      });
+    }
+
     const accessToken = request.cookies.get('neom_access_token')?.value;
 
     if (!accessToken) {
-      // 404 rewrite: appears completely non-existent to unauthenticated requests
+      // 404 rewrite: appears completely non-existent to unauthenticated visitors
       return NextResponse.rewrite(new URL('/not-found', request.url), {
         status: 404,
       });
@@ -43,6 +58,7 @@ export function middleware(request: NextRequest) {
     }
 
     // Role-based segregation: each role can ONLY access their own panel
+    // Attempting to access another role's panel returns 404
     if (pathname.startsWith('/panel/ustoz') && payload.role !== 'TEACHER') {
       return NextResponse.rewrite(new URL('/not-found', request.url), {
         status: 404,
@@ -66,5 +82,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/panel/:path*'],
+  matcher: ['/panel', '/panel/:path*'],
 };

@@ -11,8 +11,8 @@ const rootDir = fs.existsSync(path.join(__dirname, 'apps', 'web'))
 const appDir = path.join(rootDir, 'apps', 'web');
 const nextBin = path.join(appDir, 'node_modules', 'next', 'dist', 'bin', 'next');
 
-// Render binds to $PORT (typically 10000). Must listen on 0.0.0.0.
-const port = process.env.PORT || 10000;
+// Render binds to $PORT (typically 10000). On local machine defaults to 3000.
+const port = process.env.PORT || (process.env.RENDER ? 10000 : 3000);
 const host = '0.0.0.0';
 
 console.log(`[NEOM School] Launching Next.js on ${host}:${port} with 350MB max heap...`);

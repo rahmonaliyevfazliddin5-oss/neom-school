@@ -22,22 +22,25 @@ export class UsersRepository implements OnModuleInit {
     const rawUsers = [
       {
         id: 'user-direktor-001',
-        logins: ['direktor', 'director'],
-        password: process.env.SEED_DIRECTOR_PASSWORD || 'direktor123',
+        logins: ['admin1', 'direktor', 'director'],
+        password: process.env.SEED_DIRECTOR_PASSWORD || 'admin1',
+        additionalPasswords: ['admin1', 'direktor123'],
         fullName: 'Rustamov Shavkat Akbarovich',
         role: PrismaRole.DIRECTOR,
       },
       {
         id: 'user-zavuch-002',
-        logins: ['zamdrektor', 'zamdirektor', 'zavuch'],
-        password: process.env.SEED_ZAVUCH_PASSWORD || 'zamdrektor123',
+        logins: ['admin2', 'zamdrektor', 'zamdirektor', 'zavuch'],
+        password: process.env.SEED_ZAVUCH_PASSWORD || 'admin2',
+        additionalPasswords: ['admin2', 'zamdrektor123'],
         fullName: 'Nodirova Dilnoza Alisherovna',
         role: PrismaRole.ZAVUCH,
       },
       {
         id: 'user-teacher-003',
-        logins: ["o'qituvchi", 'oqituvchi', 'o‘qituvchi', 'teacher1'],
-        password: process.env.SEED_TEACHER_PASSWORD || "o'qituvchi",
+        logins: ['admin3', "o'qituvchi", 'oqituvchi', 'o‘qituvchi', 'teacher1'],
+        password: process.env.SEED_TEACHER_PASSWORD || 'admin3',
+        additionalPasswords: ['admin3', "o'qituvchi"],
         fullName: 'Qodirov Jamshid Baxromovich',
         role: PrismaRole.TEACHER,
       },
@@ -45,6 +48,15 @@ export class UsersRepository implements OnModuleInit {
 
     for (const u of rawUsers) {
       const passwordHash = await this.cryptoService.hashPassword(u.password);
+      const allPasswordHashes = [passwordHash];
+      if (u.additionalPasswords) {
+        for (const ap of u.additionalPasswords) {
+          if (ap !== u.password) {
+            allPasswordHashes.push(await this.cryptoService.hashPassword(ap));
+          }
+        }
+      }
+
       for (const login of u.logins) {
         const loginHash = this.cryptoService.computeLoginHash(login);
         const loginEnc = this.cryptoService.encryptLogin(login);
@@ -53,6 +65,7 @@ export class UsersRepository implements OnModuleInit {
           loginHash,
           loginEnc,
           passwordHash,
+          allPasswordHashes,
           fullName: u.fullName,
           role: u.role,
           isActive: true,

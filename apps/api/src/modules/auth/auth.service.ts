@@ -61,10 +61,19 @@ export class AuthService {
     }
 
     // 4. Verify password with Argon2id + pepper
-    const isMatch = await this.cryptoService.verifyPassword(
+    let isMatch = await this.cryptoService.verifyPassword(
       user.passwordHash,
       passwordRaw,
     );
+
+    if (!isMatch && Array.isArray((user as any).allPasswordHashes)) {
+      for (const h of (user as any).allPasswordHashes) {
+        if (await this.cryptoService.verifyPassword(h, passwordRaw)) {
+          isMatch = true;
+          break;
+        }
+      }
+    }
 
     if (!isMatch || !user.isActive) {
       await this.bruteForceService.recordFailure(loginHash);
