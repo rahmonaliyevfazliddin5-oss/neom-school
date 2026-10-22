@@ -25,13 +25,12 @@ export function middleware(request: NextRequest) {
 
   // Protect all /panel and /panel/* routes
   if (pathname === '/panel' || pathname.startsWith('/panel/')) {
-    // 1. Strict whitelist: Exactly 3 panels exist in NEOM School (+ account settings)
+    // 1. Strict whitelist: Exactly 3 panels exist in NEOM School (Direktor, Zavuch, Ustoz)
     // No other panels (e.g. /panel/admin, /panel/manager, /panel/boshqa) exist or can be accessed.
     const isAllowedPanel =
       pathname.startsWith('/panel/direktor') ||
       pathname.startsWith('/panel/zavuch') ||
-      pathname.startsWith('/panel/ustoz') ||
-      pathname.startsWith('/panel/parol-login');
+      pathname.startsWith('/panel/ustoz');
 
     if (!isAllowedPanel) {
       // Return 404 so unauthorized/fake paths appear completely non-existent

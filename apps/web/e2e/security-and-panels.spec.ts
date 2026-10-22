@@ -82,7 +82,7 @@ test.describe('NEOM School 3 ta panel va xavfsizlik tizimi E2E testlari', () => 
     expect(resUstoz?.status()).toBe(404);
   });
 
-  test('5. XAVFSIZLIK: Faqat shu 3 ta panel mavjud, boshqa hech qanday panel yo‘q (/panel/admin, /panel/super, /panel)', async ({ page }) => {
+  test('5. XAVFSIZLIK: Faqat shu 3 ta panel mavjud, boshqa hech qanday panel yo‘q (/panel/admin, /panel/super, /panel, /panel/parol-login)', async ({ page }) => {
     // /panel bare URL -> 404
     const resPanel = await page.goto('/panel');
     expect(resPanel?.status()).toBe(404);
@@ -94,6 +94,10 @@ test.describe('NEOM School 3 ta panel va xavfsizlik tizimi E2E testlari', () => 
     // /panel/superadmin -> 404
     const resSuper = await page.goto('/panel/superadmin');
     expect(resSuper?.status()).toBe(404);
+
+    // /panel/parol-login -> 404 (o'chirilgan, mavjud emas)
+    const resParol = await page.goto('/panel/parol-login');
+    expect(resParol?.status()).toBe(404);
   });
 
   test('6. XAVFSIZLIK: Mehmon sahifasi manbasida panellar mavjudligi haqida hech qanday belgi yo‘q', async ({ request }) => {

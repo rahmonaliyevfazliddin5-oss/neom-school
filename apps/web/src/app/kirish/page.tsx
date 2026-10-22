@@ -72,9 +72,7 @@ export default function LoginPage() {
       setPassword('');
 
       const data = result?.data || result;
-      if (data?.mustChangePassword) {
-        router.push('/panel/parol-login');
-      } else if (data?.redirectUrl) {
+      if (data?.redirectUrl) {
         router.push(data.redirectUrl);
       } else {
         router.push('/panel/ustoz');

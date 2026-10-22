@@ -107,9 +107,7 @@ export class AuthService {
 
     // Determine target panel based on role
     let redirectUrl = '/panel/ustoz';
-    if (user.mustChangePassword) {
-      redirectUrl = '/panel/parol-login';
-    } else if (user.role === Role.ZAVUCH) {
+    if (user.role === Role.ZAVUCH) {
       redirectUrl = '/panel/zavuch';
     } else if (user.role === Role.DIRECTOR) {
       redirectUrl = '/panel/direktor';

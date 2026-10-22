@@ -119,7 +119,7 @@ describe('Auth & Security Layer (E2E)', () => {
 
       // Verify Response Body
       expect(res.body).toHaveProperty('role', Role.TEACHER);
-      expect(res.body).toHaveProperty('redirectUrl', '/panel/parol-login'); // mustChangePassword is true
+      expect(res.body).toHaveProperty('redirectUrl', '/panel/ustoz');
       expect(res.body).toHaveProperty('mustChangePassword', true);
 
       // Crucial: No credentials, tokens, or hashes leaked in JSON response body

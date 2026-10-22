@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Direktor paneli va funksiyalari E2E testlari', () => {
-  test('1. Direktor tizimga kiradi, Nazorat, Xodimlar va Hisobotlar tugmalari ishlaydi, ism-familiyani tahrirlay oladi', async ({ page }) => {
+  test('1. Direktor tizimga kiradi, Nazorat, Xodimlar va Hisobotlar tugmalari ishlaydi', async ({ page }) => {
     test.setTimeout(60000);
 
     // 1. Kirish sahifasiga o'tish
@@ -36,24 +36,7 @@ test.describe('Direktor paneli va funksiyalari E2E testlari', () => {
     await expect(page.locator('button:has-text("Excel yuklab olish")')).toBeVisible();
     await expect(page.locator('button:has-text("Chop etish")')).toBeVisible();
 
-    // 6. "Parol va login" (Profil va xavfsizlik) sahifasiga o'tish
-    await page.click('a[href="/panel/parol-login"]');
-    await page.waitForURL('**/panel/parol-login');
-    await expect(page.locator('h1')).toContainText('Profil va xavfsizlik');
-
-    // Ism va familiya (F.I.SH) maydoni mavjudligini tekshirish
-    const fullNameInput = page.locator('input#fullName');
-    await expect(fullNameInput).toBeVisible();
-
-    // Ismni yangilash va joriy parol orqali saqlash
-    await fullNameInput.fill('Rustamov Shavkat Akbarovich (Direktor)');
-    await page.fill('input#currentPassword', 'direktor123');
-    await page.click('button[type="submit"]:has-text("O‘zgarishlarni saqlash")');
-
-    // Muvaffaqiyatli saqlanganlik bildirishnomasini tekshirish (Argon2id hisob-kitobini hisobga olgan holda)
-    await expect(page.locator('text=muvaffaqiyatli').first()).toBeVisible({ timeout: 15000 });
-
-    // Qayta "Nazorat" tugmasini bosib boshqaruvga qaytish
+    // 6. Qayta "Nazorat" tugmasini bosib boshqaruvga qaytish
     await page.locator('aside a[href="/panel/direktor"]').click();
     await page.waitForURL('**/panel/direktor');
     await expect(page.locator('h1')).toContainText('Maktab nazorati');

@@ -12,7 +12,6 @@ import {
   CalendarCheck,
   Layers,
   BarChart3,
-  KeyRound,
   LayoutDashboard,
   Newspaper,
   ShieldCheck,
@@ -112,21 +111,18 @@ export const PanelShell: React.FC<PanelShellProps> = ({
           { title: 'Davomat', href: '/panel/ustoz', icon: CalendarCheck },
           { title: 'Sinflarim', href: '/panel/ustoz/sinflar', icon: Layers },
           { title: 'Hisobot', href: '/panel/ustoz/hisobot', icon: BarChart3 },
-          { title: 'Parol va login', href: '/panel/parol-login', icon: KeyRound },
         ];
       case Role.ZAVUCH:
         return [
           { title: 'Bosh panel', href: '/panel/zavuch', icon: LayoutDashboard },
           { title: 'Sinflar', href: '/panel/zavuch/sinflar', icon: Layers },
           { title: 'Yangilik va tadbirlar', href: '/panel/zavuch/yangiliklar', icon: Newspaper },
-          { title: 'Parol va login', href: '/panel/parol-login', icon: KeyRound },
         ];
       case Role.DIRECTOR:
         return [
           { title: 'Nazorat', href: '/panel/direktor', icon: ShieldCheck },
           { title: 'Xodimlar', href: '/panel/direktor/xodimlar', icon: UserCog },
           { title: 'Hisobotlar', href: '/panel/direktor/hisobotlar', icon: BarChart3 },
-          { title: 'Parol va login', href: '/panel/parol-login', icon: KeyRound },
         ];
       default:
         return [];
