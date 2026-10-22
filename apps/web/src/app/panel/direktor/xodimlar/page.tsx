@@ -33,7 +33,7 @@ interface StaffMember {
 
 export default function DirectorStaffPage() {
   const { toast } = useToast();
-  const [directorName, setDirectorName] = useState('Rustamov Shavkat Akbarovich');
+  const [directorName, setDirectorName] = useState('Direktor');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFilter, setSelectedFilter] = useState<'ALL' | 'DIRECTOR' | 'ZAVUCH' | 'TEACHER'>('ALL');
   const [showAddModal, setShowAddModal] = useState(false);
@@ -44,78 +44,7 @@ export default function DirectorStaffPage() {
   const [newSubject, setNewSubject] = useState('');
   const [newPhone, setNewPhone] = useState('');
 
-  const [staffList, setStaffList] = useState<StaffMember[]>([
-    {
-      id: 'st-1',
-      fullName: 'Rustamov Shavkat Akbarovich',
-      role: 'Maktab direktori',
-      roleType: 'DIRECTOR',
-      subjectOrClass: 'Umumiy boshqaruv',
-      phone: '+998 50 006 79 69',
-      isActive: true,
-      joinedDate: '2024-08-15',
-    },
-    {
-      id: 'st-2',
-      fullName: 'Nodirova Dilnoza Alisherovna',
-      role: 'O‘quv ishlari bo‘yicha direktor o‘rinbosari (Zavuch)',
-      roleType: 'ZAVUCH',
-      subjectOrClass: 'O‘quv jarayoni va metodika',
-      phone: '+998 90 123 45 67',
-      isActive: true,
-      joinedDate: '2024-08-20',
-    },
-    {
-      id: 'st-3',
-      fullName: 'Qodirov Jamshid Baxromovich',
-      role: 'Sinf rahbari / Katta o‘qituvchi',
-      roleType: 'TEACHER',
-      subjectOrClass: '1-A sinf rahbari · Matematika',
-      phone: '+998 93 555 44 33',
-      isActive: true,
-      joinedDate: '2025-01-10',
-    },
-    {
-      id: 'st-4',
-      fullName: 'Ahmedova Nilufar Shuxratovna',
-      role: 'Sinf rahbari / O‘qituvchi',
-      roleType: 'TEACHER',
-      subjectOrClass: '2-A sinf rahbari · Ona tili va adabiyot',
-      phone: '+998 97 777 88 99',
-      isActive: true,
-      joinedDate: '2025-02-01',
-    },
-    {
-      id: 'st-5',
-      fullName: 'Usmonov Otabek Mirzohidovich',
-      role: 'Sinf rahbari / O‘qituvchi',
-      roleType: 'TEACHER',
-      subjectOrClass: '11-A sinf rahbari · Fizika va Astronomiya',
-      phone: '+998 94 321 00 11',
-      isActive: true,
-      joinedDate: '2025-02-15',
-    },
-    {
-      id: 'st-6',
-      fullName: 'Xoliqova Feruza Mansurovna',
-      role: 'Fan o‘qituvchisi',
-      roleType: 'TEACHER',
-      subjectOrClass: 'Ingliz tili (IELTS / CEFR)',
-      phone: '+998 91 444 33 22',
-      isActive: true,
-      joinedDate: '2025-03-01',
-    },
-    {
-      id: 'st-7',
-      fullName: 'Karimov Sanjar Anvarovich',
-      role: 'Fan o‘qituvchisi',
-      roleType: 'TEACHER',
-      subjectOrClass: 'Informatika va Robototexnika',
-      phone: '+998 99 888 77 66',
-      isActive: true,
-      joinedDate: '2025-03-10',
-    },
-  ]);
+  const [staffList, setStaffList] = useState<StaffMember[]>([]);
 
   const filteredStaff = staffList.filter((member) => {
     const matchesSearch =
@@ -415,7 +344,7 @@ export default function DirectorStaffPage() {
                   <input
                     type="text"
                     required
-                    placeholder="Masalan: Karimova Dilnoza"
+                    placeholder="Xodim to‘liq ismi (F.I.SH)"
                     value={newFullName}
                     onChange={(e) => setNewFullName(e.target.value)}
                     className="w-full mt-1 px-3.5 py-2.5 rounded-xl border border-[#e1e8f3] dark:border-[#24324d] bg-[#f8fafc] dark:bg-[#0e1726] text-sm text-[#0b2a5b] dark:text-white outline-none focus:border-[#0c3b7c]"

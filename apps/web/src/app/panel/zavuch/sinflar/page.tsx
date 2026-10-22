@@ -40,140 +40,14 @@ interface ClassItem {
   students?: string[];
 }
 
-const INITIAL_CLASSES: ClassItem[] = [
-  {
-    id: 'c-1',
-    name: '1-A',
-    grade: 1,
-    letter: 'A',
-    teacher: 'Qodirov Jamshid Baxromovich',
-    teacherLogin: 'admin3',
-    teacherPassword: 'admin3',
-    studentsCount: 26,
-    room: '101-xona',
-    attendanceRate: 98,
-    isSubmitted: true,
-    students: ['Aliyev Anvar', 'Karimova Malika', 'Hasanov Ali', 'Saidova Madina', 'Toshmatov Jasur'],
-  },
-  {
-    id: 'c-2',
-    name: '1-D',
-    grade: 1,
-    letter: 'D',
-    teacher: 'Ahmedova Nilufar Shuxratovna',
-    teacherLogin: 'nilufar_ustoz',
-    teacherPassword: 'teacher123',
-    studentsCount: 24,
-    room: '102-xona',
-    attendanceRate: 96,
-    isSubmitted: true,
-    students: ['Ergashev Bobur', 'Xoliqova Ziyoda', 'Nazarov Diyor', 'Ismoilova Sevara'],
-  },
-  {
-    id: 'c-3',
-    name: '2-A',
-    grade: 2,
-    letter: 'A',
-    teacher: 'Usmonov Otabek Mirzohidovich',
-    teacherLogin: 'otabek_ustoz',
-    teacherPassword: 'teacher123',
-    studentsCount: 25,
-    room: '103-xona',
-    attendanceRate: 100,
-    isSubmitted: true,
-    students: ['Rahimov Dilshod', 'Sobirova Kamola', 'Vohidov Sardor', 'Mirzayeva Lola'],
-  },
-  {
-    id: 'c-4',
-    name: '2-B',
-    grade: 2,
-    letter: 'B',
-    teacher: 'Nodirova Dilnoza Alisherovna',
-    teacherLogin: 'admin2',
-    teacherPassword: 'admin2',
-    studentsCount: 23,
-    room: '104-xona',
-    attendanceRate: 95,
-    isSubmitted: true,
-    students: ['Zokirov Temur', 'Qosimova Shahlo', 'Boboyev Farhod'],
-  },
-  {
-    id: 'c-5',
-    name: '3-A',
-    grade: 3,
-    letter: 'A',
-    teacher: 'Sultonov Bekzod Xurramovich',
-    teacherLogin: 'bekzod_ustoz',
-    teacherPassword: 'teacher123',
-    studentsCount: 27,
-    room: '201-xona',
-    attendanceRate: 97,
-    isSubmitted: true,
-    students: ['Abdullayev Javohir', 'Yusupova Rayhona', 'Normatov Rustam'],
-  },
-  {
-    id: 'c-6',
-    name: '5-B',
-    grade: 5,
-    letter: 'B',
-    teacher: 'G‘aniyeva Feruza Akbarovna',
-    teacherLogin: 'feruza_ustoz',
-    teacherPassword: 'teacher123',
-    studentsCount: 28,
-    room: '205-xona',
-    attendanceRate: 96,
-    isSubmitted: true,
-    students: ['Karimov Ulug‘bek', 'Azizova Shaxzoda', 'Toirov Samandar'],
-  },
-  {
-    id: 'c-7',
-    name: '9-A',
-    grade: 9,
-    letter: 'A',
-    teacher: 'Qodirov Jamshid Baxromovich',
-    teacherLogin: 'admin3',
-    teacherPassword: 'admin3',
-    studentsCount: 26,
-    room: '302-xona',
-    attendanceRate: 94,
-    isSubmitted: true,
-    students: ['Aliyev Anvar', 'Karimova Malika', 'Hasanov Ali', 'Saidova Madina'],
-  },
-  {
-    id: 'c-8',
-    name: '11-A',
-    grade: 11,
-    letter: 'A',
-    teacher: 'Usmonov Otabek Mirzohidovich',
-    teacherLogin: 'otabek_ustoz',
-    teacherPassword: 'teacher123',
-    studentsCount: 22,
-    room: '308-xona',
-    attendanceRate: 98,
-    isSubmitted: true,
-    students: ['Ergashev Bobur', 'Mamatov Doniyor', 'Mirzayeva Lola'],
-  },
-  {
-    id: 'c-9',
-    name: '11-B',
-    grade: 11,
-    letter: 'B',
-    teacher: 'Ahmedova Nilufar Shuxratovna',
-    teacherLogin: 'nilufar_ustoz',
-    teacherPassword: 'teacher123',
-    studentsCount: 24,
-    room: '309-xona',
-    attendanceRate: 92,
-    isSubmitted: false,
-    students: ['Nazarov Diyor', 'Xoliqova Ziyoda', 'Ismoilova Sevara'],
-  },
-];
+const INITIAL_CLASSES: ClassItem[] = [];
 
 export default function ZavuchClassesPage() {
   const { toast } = useToast();
-  const [classes, setClasses] = useState<ClassItem[]>(INITIAL_CLASSES);
+  const [classes, setClasses] = useState<ClassItem[]>([]);
   const [search, setSearch] = useState('');
   const [gradeFilter, setGradeFilter] = useState<'ALL' | 'PRIMARY' | 'MIDDLE' | 'HIGH'>('ALL');
+  const [zavuchName, setZavuchName] = useState('Zavuch');
 
   // Modal states
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -189,26 +63,28 @@ export default function ZavuchClassesPage() {
   // Add Class Form State
   const [newGrade, setNewGrade] = useState('7');
   const [newLetter, setNewLetter] = useState('B');
-  const [newTeacher, setNewTeacher] = useState('Alimova Zarina Bahodirovna');
-  const [newTeacherLogin, setNewTeacherLogin] = useState('zarina_ustoz');
-  const [newTeacherPassword, setNewTeacherPassword] = useState('ustoz2026');
+  const [newTeacher, setNewTeacher] = useState('');
+  const [newTeacherLogin, setNewTeacherLogin] = useState('');
+  const [newTeacherPassword, setNewTeacherPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [newRoom, setNewRoom] = useState('204-xona');
   const [newCount, setNewCount] = useState('25');
   const [copied, setCopied] = useState(false);
 
-  // Load custom classes from API on mount
+  // Load profile and custom classes from API on mount
   useEffect(() => {
+    fetch('/api/auth/me')
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data?.fullName) setZavuchName(data.fullName);
+      })
+      .catch(() => {});
+
     fetch('/api/classes')
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
-        if (data?.success && Array.isArray(data.classes) && data.classes.length > 0) {
-          // Merge custom classes avoiding duplicate names
-          const customNames = new Set(data.classes.map((c: any) => c.name.toLowerCase()));
-          const filteredInitial = INITIAL_CLASSES.filter(
-            (c) => !customNames.has(c.name.toLowerCase())
-          );
-          setClasses([...data.classes, ...filteredInitial]);
+        if (data?.success && Array.isArray(data.classes)) {
+          setClasses(data.classes);
         }
       })
       .catch(() => {});
@@ -349,7 +225,7 @@ export default function ZavuchClassesPage() {
     <PanelShell
       role={Role.ZAVUCH}
       roleLabel="Zavuch · o'quv ishlari"
-      userName="Nodirova Dilnoza"
+      userName={zavuchName}
     >
       <div className="flex flex-col gap-6">
         {/* Page Header */}
@@ -670,7 +546,7 @@ export default function ZavuchClassesPage() {
                       type="text"
                       value={newTeacher}
                       onChange={(e) => setNewTeacher(e.target.value)}
-                      placeholder="Masalan: Alimova Zarina Bahodirovna"
+                      placeholder="O‘qituvchi F.I.SH"
                       className="w-full px-3 py-2 rounded-lg border border-[#ccd8e8] dark:border-[#2f4063] bg-white dark:bg-[#0f172a] text-sm text-[#0b2a5b] dark:text-white font-medium"
                       required
                     />
@@ -685,7 +561,7 @@ export default function ZavuchClassesPage() {
                         type="text"
                         value={newTeacherLogin}
                         onChange={(e) => setNewTeacherLogin(e.target.value)}
-                        placeholder="zarina_ustoz"
+                        placeholder="ustoz_login"
                         className="w-full px-3 py-2 rounded-lg border border-[#ccd8e8] dark:border-[#2f4063] bg-white dark:bg-[#0f172a] text-sm font-mono text-[#0b2a5b] dark:text-white"
                         required
                       />
@@ -833,22 +709,25 @@ export default function ZavuchClassesPage() {
 
               {/* Student list */}
               <div className="mt-4 overflow-y-auto flex-1 divide-y divide-[#edf2f7] dark:divide-[#1e2c45]">
-                {(viewStudentsClass.students && viewStudentsClass.students.length > 0
-                  ? viewStudentsClass.students
-                  : ['Aliyev Anvar', 'Karimova Malika', 'Hasanov Ali', 'Saidova Madina', 'Toshmatov Jasur']
-                ).map((student, idx) => (
-                  <div key={idx} className="py-2.5 flex items-center justify-between text-sm">
-                    <span className="flex items-center gap-2 text-[#0b2a5b] dark:text-white font-medium">
-                      <span className="w-6 text-center text-xs text-[#7e95b8] font-bold">
-                        {idx + 1}.
+                {viewStudentsClass.students && viewStudentsClass.students.length > 0 ? (
+                  viewStudentsClass.students.map((student, idx) => (
+                    <div key={idx} className="py-2.5 flex items-center justify-between text-sm">
+                      <span className="flex items-center gap-2 text-[#0b2a5b] dark:text-white font-medium">
+                        <span className="w-6 text-center text-xs text-[#7e95b8] font-bold">
+                          {idx + 1}.
+                        </span>
+                        {student}
                       </span>
-                      {student}
-                    </span>
-                    <span className="text-xs text-[#009944] bg-[#e6fff0] dark:bg-[#163824] px-2 py-0.5 rounded-full font-medium">
-                      Faol
-                    </span>
+                      <span className="text-xs text-[#009944] bg-[#e6fff0] dark:bg-[#163824] px-2 py-0.5 rounded-full font-medium">
+                        Faol
+                      </span>
+                    </div>
+                  ))
+                ) : (
+                  <div className="py-8 text-center text-xs text-[#7e95b8] dark:text-[#8ea8d6]">
+                    Ushbu sinfga hozircha o‘quvchilar qo‘shilmagan. Yuqoridagi maydondan o‘quvchi qo‘shishingiz mumkin.
                   </div>
-                ))}
+                )}
               </div>
 
               <div className="pt-4 border-t border-[#edf2f7] dark:border-[#24324d] flex justify-end shrink-0">

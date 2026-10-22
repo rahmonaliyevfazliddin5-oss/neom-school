@@ -32,20 +32,13 @@ interface StudentInfo {
   attendanceRate: number;
 }
 
-const INITIAL_STUDENTS: StudentInfo[] = [
-  { id: '1', name: 'Aliyev Anvar', phone: '+998 90 123-45-67', parentName: 'Aliyev Shavkat', parentPhone: '+998 90 987-65-43', academicYear: '2026–2027', enrollmentDate: '02.09.2026', status: 'Faol', attendanceRate: 98 },
-  { id: '2', name: 'Karimova Malika', phone: '+998 93 234-56-78', parentName: 'Karimova Nargiza', parentPhone: '+998 93 876-54-32', academicYear: '2026–2027', enrollmentDate: '02.09.2026', status: 'Faol', attendanceRate: 92 },
-  { id: '3', name: 'Hasanov Ali', phone: '+998 97 345-67-89', parentName: 'Hasanov Dilshod', parentPhone: '+998 97 765-43-21', academicYear: '2026–2027', enrollmentDate: '02.09.2026', status: 'Faol', attendanceRate: 94 },
-  { id: '4', name: 'Saidova Madina', phone: '+998 99 456-78-90', parentName: 'Saidov Bahrom', parentPhone: '+998 99 654-32-10', academicYear: '2026–2027', enrollmentDate: '02.09.2026', status: 'Faol', attendanceRate: 96 },
-  { id: '5', name: 'Toshmatov Jasur', phone: '+998 91 567-89-01', parentName: 'Toshmatov Otabek', parentPhone: '+998 91 543-21-09', academicYear: '2026–2027', enrollmentDate: '02.09.2026', status: 'Faol', attendanceRate: 100 },
-  { id: '6', name: 'Yusupova Rayhona', phone: '+998 94 678-90-12', parentName: 'Yusupova Gulnora', parentPhone: '+998 94 432-10-98', academicYear: '2026–2027', enrollmentDate: '02.09.2026', status: 'Faol', attendanceRate: 96 },
-];
+const INITIAL_STUDENTS: StudentInfo[] = [];
 
 export default function TeacherClassesPage() {
   const { toast } = useToast();
   const [className, setClassName] = useState('9-A');
-  const [teacherName, setTeacherName] = useState('Qodirov Jamshid');
-  const [students, setStudents] = useState<StudentInfo[]>(INITIAL_STUDENTS);
+  const [teacherName, setTeacherName] = useState('O‘qituvchi');
+  const [students, setStudents] = useState<StudentInfo[]>([]);
   const [search, setSearch] = useState('');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
@@ -70,7 +63,7 @@ export default function TeacherClassesPage() {
           const stdRes = await fetch(`/api/students?className=${encodeURIComponent(targetClass)}`);
           if (stdRes.ok) {
             const stdData = await stdRes.json();
-            if (Array.isArray(stdData.students) && stdData.students.length > 0) {
+            if (Array.isArray(stdData.students)) {
               setStudents(stdData.students);
             }
           }
@@ -249,36 +242,44 @@ export default function TeacherClassesPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#edf2f7] dark:divide-[#1e2c45]">
-                {filteredStudents.map((std, idx) => (
-                  <tr key={std.id} className="hover:bg-[#f8fafc] dark:hover:bg-[#172236] transition-colors">
-                    <td className="py-3.5 px-4 text-xs font-bold text-[#7e95b8]">{idx + 1}</td>
-                    <td className="py-3.5 px-4 font-bold text-[#0b2a5b] dark:text-white">
-                      <div>{std.name}</div>
-                      <div className="text-[11px] text-[#7e95b8] font-normal">Qo‘shilgan: {std.enrollmentDate || '02.09.2026'}</div>
-                    </td>
-                    <td className="py-3.5 px-4 text-center">
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-sm text-[11px] font-bold bg-[#e6f0ff] dark:bg-[#1c2c47] text-[#0066cc] dark:text-[#4d9fff]">
-                        {std.academicYear || '2026–2027'}
-                      </span>
-                    </td>
-                    <td className="py-3.5 px-4 text-[#4a5f82] dark:text-[#9db4dd] text-xs flex items-center gap-1.5 pt-4">
-                      <Phone className="w-3.5 h-3.5 text-[#0066cc]" />
-                      {std.phone}
-                    </td>
-                    <td className="py-3.5 px-4 text-[#4a5f82] dark:text-[#9db4dd] text-xs">{std.parentName}</td>
-                    <td className="py-3.5 px-4 text-[#4a5f82] dark:text-[#9db4dd] text-xs">{std.parentPhone}</td>
-                    <td className="py-3.5 px-4 text-center">
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#e6fff0] dark:bg-[#163824] text-[#009944] dark:text-[#33cc77]">
-                        {std.status || 'Faol'}
-                      </span>
-                    </td>
-                    <td className="py-3.5 px-4 text-center">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#e6fff0] dark:bg-[#163824] text-[#009944] dark:text-[#33cc77]">
-                        {std.attendanceRate}%
-                      </span>
+                {filteredStudents.length > 0 ? (
+                  filteredStudents.map((std, idx) => (
+                    <tr key={std.id} className="hover:bg-[#f8fafc] dark:hover:bg-[#172236] transition-colors">
+                      <td className="py-3.5 px-4 text-xs font-bold text-[#7e95b8]">{idx + 1}</td>
+                      <td className="py-3.5 px-4 font-bold text-[#0b2a5b] dark:text-white">
+                        <div>{std.name}</div>
+                        <div className="text-[11px] text-[#7e95b8] font-normal">Qo‘shilgan: {std.enrollmentDate || '02.09.2026'}</div>
+                      </td>
+                      <td className="py-3.5 px-4 text-center">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-sm text-[11px] font-bold bg-[#e6f0ff] dark:bg-[#1c2c47] text-[#0066cc] dark:text-[#4d9fff]">
+                          {std.academicYear || '2026–2027'}
+                        </span>
+                      </td>
+                      <td className="py-3.5 px-4 text-[#4a5f82] dark:text-[#9db4dd] text-xs flex items-center gap-1.5 pt-4">
+                        <Phone className="w-3.5 h-3.5 text-[#0066cc]" />
+                        {std.phone}
+                      </td>
+                      <td className="py-3.5 px-4 text-[#4a5f82] dark:text-[#9db4dd] text-xs">{std.parentName}</td>
+                      <td className="py-3.5 px-4 text-[#4a5f82] dark:text-[#9db4dd] text-xs">{std.parentPhone}</td>
+                      <td className="py-3.5 px-4 text-center">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#e6fff0] dark:bg-[#163824] text-[#009944] dark:text-[#33cc77]">
+                          {std.status || 'Faol'}
+                        </span>
+                      </td>
+                      <td className="py-3.5 px-4 text-center">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#e6fff0] dark:bg-[#163824] text-[#009944] dark:text-[#33cc77]">
+                          {std.attendanceRate}%
+                        </span>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={8} className="py-12 text-center text-sm text-[#7e95b8] dark:text-[#8ea8d6]">
+                      Ushbu sinfda hozircha o‘quvchilar ro‘yxati mavjud emas. Yuqoridagi &quot;Yangi o‘quvchi qo‘shish&quot; tugmasi orqali o‘quvchi kiriting.
                     </td>
                   </tr>
-                ))}
+                )}
               </tbody>
             </table>
           </div>
@@ -315,7 +316,7 @@ export default function TeacherClassesPage() {
                     type="text"
                     value={newName}
                     onChange={(e) => setNewName(e.target.value)}
-                    placeholder="Masalan: Qodirov Sardor"
+                    placeholder="O‘quvchi F.I.SH"
                     className="w-full px-3 py-2 rounded-lg border border-[#ccd8e8] dark:border-[#2f4063] bg-white dark:bg-[#0f172a] text-sm text-[#0b2a5b] dark:text-white"
                     required
                   />
@@ -342,7 +343,7 @@ export default function TeacherClassesPage() {
                     type="text"
                     value={newParentName}
                     onChange={(e) => setNewParentName(e.target.value)}
-                    placeholder="Masalan: Qodirova Munira"
+                    placeholder="Ota-onasi F.I.SH"
                     className="w-full px-3 py-2 rounded-lg border border-[#ccd8e8] dark:border-[#2f4063] bg-white dark:bg-[#0f172a] text-sm text-[#0b2a5b] dark:text-white"
                   />
                 </div>

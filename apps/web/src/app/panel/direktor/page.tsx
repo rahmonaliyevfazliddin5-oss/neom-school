@@ -13,25 +13,15 @@ interface ClassProgressItem {
 }
 
 export default function DirectorSupervisionPage() {
-  const [directorName, setDirectorName] = useState('Rustamov Shavkat');
+  const [directorName, setDirectorName] = useState('Direktor');
   const [stats, setStats] = useState({
-    todayRate: 96,
-    monthlyRate: 94,
-    classesCount: 9,
-    teachersCount: 50,
+    todayRate: 0,
+    monthlyRate: 0,
+    classesCount: 0,
+    teachersCount: 0,
   });
 
-  const [classProgress, setClassProgress] = useState<ClassProgressItem[]>([
-    { name: '1-A', percent: 96 },
-    { name: '1-D', percent: 92 },
-    { name: '2-A', percent: 95 },
-    { name: '2-B', percent: 89 },
-    { name: '3-A', percent: 93 },
-    { name: '3-D', percent: 90 },
-    { name: '11-A', percent: 94 },
-    { name: '11-B', percent: 87 },
-    { name: '11-D', percent: 91 },
-  ]);
+  const [classProgress, setClassProgress] = useState<ClassProgressItem[]>([]);
 
   useEffect(() => {
     // Load director user profile info
@@ -52,17 +42,17 @@ export default function DirectorSupervisionPage() {
         if (res.ok) {
           const data = await res.json();
           setStats({
-            todayRate: data.todayRate || 96,
-            monthlyRate: data.monthlyRate || 94,
-            classesCount: data.classesCount || 9,
-            teachersCount: data.teachersCount || 50,
+            todayRate: data.todayRate || 0,
+            monthlyRate: data.monthlyRate || 0,
+            classesCount: data.classesCount || 0,
+            teachersCount: data.teachersCount || 0,
           });
-          if (Array.isArray(data.classProgress) && data.classProgress.length > 0) {
+          if (Array.isArray(data.classProgress)) {
             setClassProgress(data.classProgress);
           }
         }
       } catch {
-        // Fallback to sample data
+        // Fallback
       }
     }
 
@@ -88,25 +78,25 @@ export default function DirectorSupervisionPage() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
           label="Bugungi davomat"
-          value={`461 nafar (${stats.todayRate}%)`}
+          value={`${stats.todayRate}%`}
           valueColor="text-[#0d4a22]"
-          subtext="461 / 480 o‘quvchi qatnashdi"
+          subtext={stats.classesCount > 0 ? `${stats.classesCount} ta sinf bo‘yicha` : "Davomat kutilmoqda"}
         />
         <StatCard
           label="Oylik davomat"
-          value={`451 nafar (${stats.monthlyRate}%)`}
+          value={`${stats.monthlyRate}%`}
           valueColor="text-[#0c3b7c] dark:text-[#d5e3ff]"
-          subtext="Oylik o‘rtacha: 451 / 480 o‘quvchi"
+          subtext={stats.classesCount > 0 ? "Oylik o‘rtacha qatnashuv" : "Hisobot shakllanmoqda"}
         />
         <StatCard
           label="Sinflar soni"
-          value={stats.classesCount}
+          value={`${stats.classesCount} ta`}
           valueColor="text-[#0c3b7c] dark:text-[#d5e3ff]"
-          subtext="1-11 parallel sinflar"
+          subtext="Ro‘yxatdan o‘tgan sinflar"
         />
         <StatCard
           label="O'qituvchilar"
-          value={stats.teachersCount}
+          value={`${stats.teachersCount} nafar`}
           valueColor="text-[#8a3d00]"
           subtext="Faol xodimlar soni"
         />
@@ -117,25 +107,31 @@ export default function DirectorSupervisionPage() {
         <Card className="lg:col-span-2 gap-2">
           <div className="mb-2">
             <h3 className="text-base font-bold text-[#0b2a5b] dark:text-white">
-              Davomat monitoringi (son va foizda)
+              Davomat monitoringi (foizda)
             </h3>
             <p className="text-xs text-[#4a5f82] dark:text-[#9db4dd]">
-              Har bir sinfning joriy oydagi qatnashuv ko‘rsatkichi va foizi
+              Har bir sinfning joriy kundagi qatnashuv ko‘rsatkichi va foizi
             </p>
           </div>
 
           <div className="divide-y divide-[#e8eef7] dark:divide-[#24324d]">
-            {classProgress.map((item) => (
-              <div key={item.name} className="py-2.5 flex items-center gap-4 text-xs">
-                <span className="w-12 font-bold text-[#0b2a5b] dark:text-white">
-                  {item.name}
-                </span>
-                <ProgressBar value={item.percent} className="flex-1" />
-                <span className="text-right font-semibold text-[#0c3b7c] dark:text-[#5a95e5] whitespace-nowrap">
-                  {Math.round(26 * (item.percent / 100))} / 26 nafar · {item.percent}%
-                </span>
+            {classProgress.length > 0 ? (
+              classProgress.map((item) => (
+                <div key={item.name} className="py-2.5 flex items-center gap-4 text-xs">
+                  <span className="w-16 font-bold text-[#0b2a5b] dark:text-white">
+                    {item.name} sinf
+                  </span>
+                  <ProgressBar value={item.percent} className="flex-1" />
+                  <span className="text-right font-semibold text-[#0c3b7c] dark:text-[#5a95e5] whitespace-nowrap">
+                    {item.percent}%
+                  </span>
+                </div>
+              ))
+            ) : (
+              <div className="py-8 text-center text-sm text-[#4a5f82] dark:text-[#9db4dd]">
+                Hozircha birorta ham sinf ro‘yxatga olinmagan. Zavuch panelidan sinf yaratilgach, bu yerda real vaqtda monitoring boshlanadi.
               </div>
-            ))}
+            )}
           </div>
         </Card>
 
@@ -143,38 +139,41 @@ export default function DirectorSupervisionPage() {
         <Card className="gap-2">
           <div className="mb-2">
             <h3 className="text-base font-bold text-[#0b2a5b] dark:text-white">
-              Xodimlar hisoblari
+              Boshqaruv va xodimlar
             </h3>
             <p className="text-xs text-[#4a5f82] dark:text-[#9db4dd]">
-              Tezkor ma&apos;muriy boshqaruv
+              Xodimlar tarkibi va tezkor harakatlar
             </p>
           </div>
 
-          <div className="divide-y divide-[#e8eef7] dark:divide-[#24324d]">
-            <div className="py-3 flex items-center justify-between">
+          <div className="space-y-3 text-xs text-[#4a5f82] dark:text-[#9db4dd]">
+            <div className="p-3 rounded-lg bg-[#f0f4fa] dark:bg-[#15233e] flex items-center justify-between">
               <div>
-                <p className="font-semibold text-sm text-[#0b2a5b] dark:text-white">Zavuch</p>
-                <p className="text-xs text-[#4a5f82] dark:text-[#9db4dd]">Nodirova D.</p>
+                <p className="font-semibold text-[#0b2a5b] dark:text-white">Faol xodimlar</p>
+                <p className="text-[11px] text-[#7185a6]">Maktab shtatidagi xodimlar</p>
               </div>
-              <button
-                onClick={() => alert("Parolni tiklash xabari yuborildi")}
-                className="bg-white dark:bg-[#141d2e] border border-[#b9c8e2] dark:border-[#24324d] text-[#0c2f66] dark:text-[#d5e3ff] hover:bg-gray-50 text-xs font-medium px-3 py-1.5 rounded-lg transition-colors"
-              >
-                Parolni tiklash
-              </button>
+              <span className="text-sm font-bold text-[#0c3b7c] dark:text-[#5a95e5]">
+                {stats.teachersCount} nafar
+              </span>
             </div>
 
-            <div className="py-3 flex items-center justify-between">
+            <div className="p-3 rounded-lg bg-[#f0f4fa] dark:bg-[#15233e] flex items-center justify-between">
               <div>
-                <p className="font-semibold text-sm text-[#0b2a5b] dark:text-white">O&apos;qituvchi</p>
-                <p className="text-xs text-[#4a5f82] dark:text-[#9db4dd]">Qodirov J.</p>
+                <p className="font-semibold text-[#0b2a5b] dark:text-white">Jami sinflar</p>
+                <p className="text-[11px] text-[#7185a6]">O‘quv jarayonidagi guruhlar</p>
               </div>
-              <button
-                onClick={() => alert("Parolni tiklash xabari yuborildi")}
-                className="bg-white dark:bg-[#141d2e] border border-[#b9c8e2] dark:border-[#24324d] text-[#0c2f66] dark:text-[#d5e3ff] hover:bg-gray-50 text-xs font-medium px-3 py-1.5 rounded-lg transition-colors"
+              <span className="text-sm font-bold text-[#0c3b7c] dark:text-[#5a95e5]">
+                {stats.classesCount} ta
+              </span>
+            </div>
+
+            <div className="pt-2">
+              <a
+                href="/panel/direktor/xodimlar"
+                className="w-full inline-flex items-center justify-center px-4 py-2 rounded-lg bg-[#0c3b7c] hover:bg-[#0a2f64] text-white font-semibold text-xs transition-colors"
               >
-                Parolni tiklash
-              </button>
+                Xodimlar ro‘yxatini ko‘rish
+              </a>
             </div>
           </div>
         </Card>

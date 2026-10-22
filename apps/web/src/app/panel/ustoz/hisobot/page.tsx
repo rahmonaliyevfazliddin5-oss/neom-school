@@ -34,30 +34,21 @@ interface AttendanceRow {
   rate: number;
 }
 
-const DEFAULT_ROWS: AttendanceRow[] = [
-  { id: '1', student: 'Aliyev Anvar', mon: 'Keldi', tue: 'Keldi', wed: 'Keldi', thu: 'Keldi', fri: 'Keldi', sat: 'Keldi', attendedDays: 22, missedDays: 0, excusedDays: 0, lateDays: 0, rate: 100 },
-  { id: '2', student: 'Karimova Malika', mon: 'Keldi', tue: 'Kelmadi', wed: 'Keldi', thu: 'Keldi', fri: 'Keldi', sat: 'Keldi', attendedDays: 20, missedDays: 2, excusedDays: 0, lateDays: 0, rate: 91 },
-  { id: '3', student: 'Hasanov Ali', mon: 'Keldi', tue: 'Keldi', wed: 'Sababli', thu: 'Keldi', fri: 'Keldi', sat: 'Keldi', attendedDays: 21, missedDays: 0, excusedDays: 1, lateDays: 0, rate: 95 },
-  { id: '4', student: 'Saidova Madina', mon: 'Keldi', tue: 'Keldi', wed: 'Kechikdi', thu: 'Keldi', fri: 'Keldi', sat: 'Keldi', attendedDays: 21, missedDays: 0, excusedDays: 0, lateDays: 1, rate: 98 },
-  { id: '5', student: 'Toshmatov Jasur', mon: 'Keldi', tue: 'Keldi', wed: 'Keldi', thu: 'Keldi', fri: 'Keldi', sat: 'Keldi', attendedDays: 22, missedDays: 0, excusedDays: 0, lateDays: 0, rate: 100 },
-  { id: '6', student: 'Yusupova Rayhona', mon: 'Keldi', tue: 'Keldi', wed: 'Keldi', thu: 'Keldi', fri: 'Keldi', sat: 'Keldi', attendedDays: 22, missedDays: 0, excusedDays: 0, lateDays: 0, rate: 100 },
-];
-
 export default function TeacherReportPage() {
   const { toast } = useToast();
   const [className, setClassName] = useState('9-A');
-  const [teacherName, setTeacherName] = useState('Qodirov Jamshid');
+  const [teacherName, setTeacherName] = useState('O‘qituvchi');
   const [periodType, setPeriodType] = useState<'MONTH' | 'WEEK' | 'QUARTER' | 'YEAR'>('MONTH');
   const [selectedMonth, setSelectedMonth] = useState('2026-10');
   const [selectedMonthName, setSelectedMonthName] = useState('Oktabr 2026');
-  const [reportRows, setReportRows] = useState<AttendanceRow[]>(DEFAULT_ROWS);
+  const [reportRows, setReportRows] = useState<AttendanceRow[]>([]);
 
   const [stats, setStats] = useState({
-    rate: 98.1,
-    totalDays: 22,
-    keldi: 614,
-    kelmadi: 8,
-    kechikdi: 4,
+    rate: 100,
+    totalDays: 0,
+    keldi: 0,
+    kelmadi: 0,
+    kechikdi: 0,
   });
 
   // Load teacher profile & initial report
@@ -106,13 +97,15 @@ export default function TeacherReportPage() {
               thu: s.thu || 'Keldi',
               fri: s.fri || 'Keldi',
               sat: s.sat || 'Keldi',
-              attendedDays: s.attendedDays ?? 22,
+              attendedDays: s.attendedDays ?? 0,
               missedDays: s.missedDays ?? 0,
               excusedDays: s.excusedDays ?? 0,
               lateDays: s.lateDays ?? 0,
               rate: s.rate ?? 100,
             }));
             setReportRows(formatted);
+          } else {
+            setReportRows([]);
           }
         }
       }
@@ -338,25 +331,33 @@ export default function TeacherReportPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#edf2f7] dark:divide-[#1e2c45]">
-                {reportRows.map((row, idx) => (
-                  <tr key={row.id || idx} className="hover:bg-[#f8fafc] dark:hover:bg-[#172236] transition-colors">
-                    <td className="py-3.5 px-4 text-xs font-bold text-[#7e95b8]">{idx + 1}</td>
-                    <td className="py-3.5 px-4 font-bold text-[#0b2a5b] dark:text-white">{row.student}</td>
-                    <td className="py-3.5 px-3 text-center">{getStatusBadge(row.mon)}</td>
-                    <td className="py-3.5 px-3 text-center">{getStatusBadge(row.tue)}</td>
-                    <td className="py-3.5 px-3 text-center">{getStatusBadge(row.wed)}</td>
-                    <td className="py-3.5 px-3 text-center">{getStatusBadge(row.thu)}</td>
-                    <td className="py-3.5 px-3 text-center">{getStatusBadge(row.fri)}</td>
-                    <td className="py-3.5 px-3 text-center">{getStatusBadge(row.sat)}</td>
-                    <td className="py-3.5 px-3 text-center font-semibold text-[#009944]">{row.attendedDays} kun</td>
-                    <td className="py-3.5 px-3 text-center font-semibold text-[#b3261e]">{row.missedDays} kun</td>
-                    <td className="py-3.5 px-4 text-center">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#e6fff0] dark:bg-[#163824] text-[#009944] dark:text-[#33cc77]">
-                        {row.rate}%
-                      </span>
+                {reportRows.length > 0 ? (
+                  reportRows.map((row, idx) => (
+                    <tr key={row.id || idx} className="hover:bg-[#f8fafc] dark:hover:bg-[#172236] transition-colors">
+                      <td className="py-3.5 px-4 text-xs font-bold text-[#7e95b8]">{idx + 1}</td>
+                      <td className="py-3.5 px-4 font-bold text-[#0b2a5b] dark:text-white">{row.student}</td>
+                      <td className="py-3.5 px-3 text-center">{getStatusBadge(row.mon)}</td>
+                      <td className="py-3.5 px-3 text-center">{getStatusBadge(row.tue)}</td>
+                      <td className="py-3.5 px-3 text-center">{getStatusBadge(row.wed)}</td>
+                      <td className="py-3.5 px-3 text-center">{getStatusBadge(row.thu)}</td>
+                      <td className="py-3.5 px-3 text-center">{getStatusBadge(row.fri)}</td>
+                      <td className="py-3.5 px-3 text-center">{getStatusBadge(row.sat)}</td>
+                      <td className="py-3.5 px-3 text-center font-semibold text-[#009944]">{row.attendedDays} kun</td>
+                      <td className="py-3.5 px-3 text-center font-semibold text-[#b3261e]">{row.missedDays} kun</td>
+                      <td className="py-3.5 px-4 text-center">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#e6fff0] dark:bg-[#163824] text-[#009944] dark:text-[#33cc77]">
+                          {row.rate}%
+                        </span>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={11} className="py-12 text-center text-sm text-[#7e95b8] dark:text-[#8ea8d6]">
+                      Ushbu sinf uchun hozircha o‘quvchilar ro‘yxati yoki davomat hisoboti shakllanmagan.
                     </td>
                   </tr>
-                ))}
+                )}
               </tbody>
             </table>
           </div>

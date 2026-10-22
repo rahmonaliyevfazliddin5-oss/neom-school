@@ -33,7 +33,7 @@ interface ReportRow {
 
 export default function DirectorReportsPage() {
   const { toast } = useToast();
-  const [directorName, setDirectorName] = useState('Rustamov Shavkat');
+  const [directorName, setDirectorName] = useState('Direktor');
   const [selectedPeriod, setSelectedPeriod] = useState<'WEEK' | 'MONTH' | 'QUARTER'>('MONTH');
   const [selectedMonth, setSelectedMonth] = useState('2026-10');
   const [selectedMonthName, setSelectedMonthName] = useState('Oktabr 2026');
@@ -59,124 +59,26 @@ export default function DirectorReportsPage() {
       .catch(() => {});
   }, []);
 
-  const reportData: ReportRow[] = [
-    {
-      className: '1-A',
-      teacher: 'Qodirov Jamshid Baxromovich',
-      totalStudents: 26,
-      rate: 96,
-      keldi: 25,
-      kelmadi: 0,
-      sababli: 1,
-      kechikdi: 0,
-      statusText: 'A’lo',
-    },
-    {
-      className: '1-D',
-      teacher: 'Nazarova Gulnoza O‘tkirovna',
-      totalStudents: 25,
-      rate: 92,
-      keldi: 23,
-      kelmadi: 1,
-      sababli: 1,
-      kechikdi: 0,
-      statusText: 'Yaxshi',
-    },
-    {
-      className: '2-A',
-      teacher: 'Ahmedova Nilufar Shuxratovna',
-      totalStudents: 28,
-      rate: 95,
-      keldi: 27,
-      kelmadi: 0,
-      sababli: 1,
-      kechikdi: 0,
-      statusText: 'A’lo',
-    },
-    {
-      className: '2-B',
-      teacher: 'Ergashev Bobur Komilovich',
-      totalStudents: 24,
-      rate: 89,
-      keldi: 21,
-      kelmadi: 2,
-      sababli: 1,
-      kechikdi: 1,
-      statusText: 'Qoniqarli',
-    },
-    {
-      className: '3-A',
-      teacher: 'Saidova Mahliyo Baxtiyorovna',
-      totalStudents: 27,
-      rate: 93,
-      keldi: 25,
-      kelmadi: 1,
-      sababli: 1,
-      kechikdi: 0,
-      statusText: 'Yaxshi',
-    },
-    {
-      className: '3-D',
-      teacher: 'Mirzayev Ulug‘bek Rustamovich',
-      totalStudents: 26,
-      rate: 90,
-      keldi: 23,
-      kelmadi: 1,
-      sababli: 1,
-      kechikdi: 1,
-      statusText: 'Yaxshi',
-    },
-    {
-      className: '11-A',
-      teacher: 'Usmonov Otabek Mirzohidovich',
-      totalStudents: 22,
-      rate: 94,
-      keldi: 21,
-      kelmadi: 0,
-      sababli: 1,
-      kechikdi: 0,
-      statusText: 'A’lo',
-    },
-    {
-      className: '11-B',
-      teacher: 'To‘xtayev Sarvar Alisherovich',
-      totalStudents: 23,
-      rate: 87,
-      keldi: 20,
-      kelmadi: 2,
-      sababli: 1,
-      kechikdi: 1,
-      statusText: 'Qoniqarli',
-    },
-    {
-      className: '11-D',
-      teacher: 'Yo‘ldosheva Nargiza Shavkatovna',
-      totalStudents: 21,
-      rate: 91,
-      keldi: 19,
-      kelmadi: 1,
-      sababli: 1,
-      kechikdi: 0,
-      statusText: 'Yaxshi',
-    },
-  ];
-
   const mergedReportData: ReportRow[] = React.useMemo(() => {
-    const customRows: ReportRow[] = customClassesList.map((c) => ({
-      className: c.name,
-      teacher: c.teacher || 'Ustoz',
-      totalStudents: c.studentsCount || 25,
-      rate: selectedMonth === '2026-09' ? 97 : (c.attendanceRate || 98),
-      keldi: Math.round((c.studentsCount || 25) * 0.96),
-      kelmadi: 1,
-      sababli: 0,
-      kechikdi: 0,
-      statusText: 'A’lo',
-    }));
+    return customClassesList.map((c) => {
+      const total = c.studentsCount || 0;
+      const rate = c.attendanceRate ?? 100;
+      const keldi = Math.round(total * (rate / 100));
+      const kelmadi = Math.max(0, total - keldi);
+      const status: 'A’lo' | 'Yaxshi' | 'Qoniqarli' = rate >= 95 ? 'A’lo' : rate >= 85 ? 'Yaxshi' : 'Qoniqarli';
 
-    const existingNames = new Set(customRows.map((c) => c.className.toLowerCase()));
-    const remaining = reportData.filter((r) => !existingNames.has(r.className.toLowerCase()));
-    return [...customRows, ...remaining];
+      return {
+        className: c.name,
+        teacher: c.teacher || 'Ustoz',
+        totalStudents: total,
+        rate,
+        keldi,
+        kelmadi,
+        sababli: 0,
+        kechikdi: 0,
+        statusText: status,
+      };
+    });
   }, [customClassesList, selectedMonth]);
 
   const filteredRows = mergedReportData.filter((row) => {

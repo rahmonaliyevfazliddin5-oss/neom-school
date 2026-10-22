@@ -1,16 +1,16 @@
 [
   {
-    "id": "class-1792562534713",
-    "name": "8-B",
-    "grade": 8,
-    "letter": "B",
-    "teacher": "Alimova Zarina Bahodirovna",
-    "teacherLogin": "zarina_ustoz",
-    "teacherPassword": "ustoz2026",
-    "studentsCount": 29,
-    "room": "206-xona",
+    "id": "class-9A",
+    "name": "9-A",
+    "grade": 9,
+    "letter": "A",
+    "teacher": "O‘qituvchi",
+    "teacherLogin": "admin3",
+    "teacherPassword": "admin3",
+    "studentsCount": 0,
+    "room": "101-xona",
     "attendanceRate": 100,
-    "isSubmitted": true,
-    "createdAt": "2026-10-21T06:02:14.713Z"
+    "isSubmitted": false,
+    "createdAt": "2026-09-01T08:00:00.000Z"
   }
 ]

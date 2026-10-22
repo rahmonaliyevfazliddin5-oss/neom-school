@@ -95,9 +95,17 @@ export default function ZavuchPostsPage() {
   const [posts, setPosts] = useState<PostItem[]>(INITIAL_POSTS);
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState<'ALL' | 'NEWS' | 'EVENT' | 'PLAN'>('ALL');
+  const [zavuchName, setZavuchName] = useState('Zavuch');
 
-  // Load live posts from API
+  // Load live posts and profile from API
   useEffect(() => {
+    fetch('/api/auth/me')
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data?.fullName) setZavuchName(data.fullName);
+      })
+      .catch(() => {});
+
     fetch('/api/posts')
       .then((res) => (res.ok ? res.json() : null))
       .then((json) => {
@@ -293,7 +301,7 @@ export default function ZavuchPostsPage() {
     <PanelShell
       role={Role.ZAVUCH}
       roleLabel="Zavuch · o'quv ishlari"
-      userName="Nodirova Dilnoza"
+      userName={zavuchName}
     >
       <div className="flex flex-col gap-6">
         {/* Page Header */}

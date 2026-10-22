@@ -23,18 +23,11 @@ export default function TeacherAttendancePage() {
   const [loading, setLoading] = useState(false);
   const [className, setClassName] = useState('9-A sinf');
   const [classId, setClassId] = useState<string>('class-uuid-1');
-  const [teacherName, setTeacherName] = useState('Qodirov Jamshid');
+  const [teacherName, setTeacherName] = useState('O‘qituvchi');
 
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
 
-  const [students, setStudents] = useState<StudentAttendance[]>([
-    { id: '1', name: 'Aliyev Anvar', status: AttendanceStatus.KELDI },
-    { id: '2', name: 'Karimova Malika', status: AttendanceStatus.KELMADI },
-    { id: '3', name: 'Hasanov Ali', status: AttendanceStatus.SABABLI },
-    { id: '4', name: 'Saidova Madina', status: AttendanceStatus.KECHIKDI },
-    { id: '5', name: 'Toshmatov Jasur', status: AttendanceStatus.KELDI },
-    { id: '6', name: 'Yusupova Rayhona', status: AttendanceStatus.KELDI },
-  ]);
+  const [students, setStudents] = useState<StudentAttendance[]>([]);
 
   // Try to load real homeroom class and student attendance from API
   useEffect(() => {
@@ -49,7 +42,7 @@ export default function TeacherAttendancePage() {
           if (data.classId) setClassId(data.classId);
           if (data.teacherName) setTeacherName(data.teacherName);
           setIsSubmitted(!!data.isSubmitted);
-          if (Array.isArray(data.students) && data.students.length > 0) {
+          if (Array.isArray(data.students)) {
             setStudents(data.students);
           }
         }
@@ -212,43 +205,49 @@ export default function TeacherAttendancePage() {
         </div>
 
         <div className="divide-y divide-[#e8eef7] dark:divide-[#24324d]">
-          {students.map((student) => (
-            <div
-              key={student.id}
-              className="py-3 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2.5"
-            >
-              <span className="font-semibold text-sm text-[#0b2a5b] dark:text-white">
-                {student.name}
-              </span>
+          {students.length > 0 ? (
+            students.map((student) => (
+              <div
+                key={student.id}
+                className="py-3 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2.5"
+              >
+                <span className="font-semibold text-sm text-[#0b2a5b] dark:text-white">
+                  {student.name}
+                </span>
 
-              <div className="flex items-center gap-1.5 flex-wrap">
-                <StatusButton
-                  status={AttendanceStatus.KELDI}
-                  active={student.status === AttendanceStatus.KELDI}
-                  onClick={() => handleStatusChange(student.id, AttendanceStatus.KELDI)}
-                  disabled={isSubmitted}
-                />
-                <StatusButton
-                  status={AttendanceStatus.KELMADI}
-                  active={student.status === AttendanceStatus.KELMADI}
-                  onClick={() => handleStatusChange(student.id, AttendanceStatus.KELMADI)}
-                  disabled={isSubmitted}
-                />
-                <StatusButton
-                  status={AttendanceStatus.SABABLI}
-                  active={student.status === AttendanceStatus.SABABLI}
-                  onClick={() => handleStatusChange(student.id, AttendanceStatus.SABABLI)}
-                  disabled={isSubmitted}
-                />
-                <StatusButton
-                  status={AttendanceStatus.KECHIKDI}
-                  active={student.status === AttendanceStatus.KECHIKDI}
-                  onClick={() => handleStatusChange(student.id, AttendanceStatus.KECHIKDI)}
-                  disabled={isSubmitted}
-                />
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <StatusButton
+                    status={AttendanceStatus.KELDI}
+                    active={student.status === AttendanceStatus.KELDI}
+                    onClick={() => handleStatusChange(student.id, AttendanceStatus.KELDI)}
+                    disabled={isSubmitted}
+                  />
+                  <StatusButton
+                    status={AttendanceStatus.KELMADI}
+                    active={student.status === AttendanceStatus.KELMADI}
+                    onClick={() => handleStatusChange(student.id, AttendanceStatus.KELMADI)}
+                    disabled={isSubmitted}
+                  />
+                  <StatusButton
+                    status={AttendanceStatus.SABABLI}
+                    active={student.status === AttendanceStatus.SABABLI}
+                    onClick={() => handleStatusChange(student.id, AttendanceStatus.SABABLI)}
+                    disabled={isSubmitted}
+                  />
+                  <StatusButton
+                    status={AttendanceStatus.KECHIKDI}
+                    active={student.status === AttendanceStatus.KECHIKDI}
+                    onClick={() => handleStatusChange(student.id, AttendanceStatus.KECHIKDI)}
+                    disabled={isSubmitted}
+                  />
+                </div>
               </div>
+            ))
+          ) : (
+            <div className="py-8 text-center text-sm text-[#4a5f82] dark:text-[#9db4dd]">
+              Ushbu sinfga hali o‘quvchilar qo‘shilmagan. Yon menyudagi «Sinflarim» bo‘limidan yangi o‘quvchilarni kiritishingiz mumkin.
             </div>
-          ))}
+          )}
         </div>
       </Card>
     </PanelShell>

@@ -135,7 +135,7 @@ export function getOrCreateClassReport(
   const totalLate = rows.reduce((acc, r) => acc + r.lateDays, 0);
   const overallRate = rows.length > 0
     ? Math.round((rows.reduce((acc, r) => acc + r.rate, 0) / rows.length) * 10) / 10
-    : baseRate;
+    : 100;
 
   const newReport: ClassPeriodReport = {
     year: '2026-2027',
@@ -145,7 +145,7 @@ export function getOrCreateClassReport(
     className,
     teacher: teacherName,
     totalStudents: rows.length,
-    totalDays,
+    totalDays: rows.length > 0 ? totalDays : 0,
     attendanceRate: overallRate,
     keldi: totalAttended,
     kelmadi: totalMissed,

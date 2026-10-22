@@ -26,7 +26,7 @@ test.describe('NEOM School 3 ta panel va xavfsizlik tizimi E2E testlari', () => 
     await page.waitForURL('**/panel/zavuch/sinflar');
     await expect(page.locator('h1')).toContainText('Maktab sinflari');
     await expect(page.locator('text=Jami sinflar')).toBeVisible();
-    await expect(page.getByText('1-A sinf', { exact: true })).toBeVisible();
+    await expect(page.getByText('9-A sinf', { exact: true })).toBeVisible();
 
     // 3. Yangilik va tadbirlar bo'limi
     await page.click('aside a[href="/panel/zavuch/yangiliklar"]');
@@ -54,7 +54,7 @@ test.describe('NEOM School 3 ta panel va xavfsizlik tizimi E2E testlari', () => 
     await page.click('aside a[href="/panel/ustoz/sinflar"]');
     await page.waitForURL('**/panel/ustoz/sinflar');
     await expect(page.locator('h1')).toContainText('Mening sinflarim');
-    await expect(page.locator('text=Aliyev Anvar').first()).toBeVisible();
+    await expect(page.locator('text=Sinf o‘quvchilari')).toBeVisible();
 
     // 3. Hisobot bo'limi
     await page.click('aside a[href="/panel/ustoz/hisobot"]');
@@ -114,31 +114,52 @@ test.describe('NEOM School 3 ta panel va xavfsizlik tizimi E2E testlari', () => 
   });
 
   test('7. Zavuch yaratgan yangi sinf va sinf rahbari login/parol bilan tizimga kirishi va barcha imkoniyatlari ishlashi', async ({ page }) => {
-    // 1. Kirish sahifasiga o'tish va yangi o'qituvchi akkaunti bilan kirish
+    // 1. Zavuch tizimga kirib yangi sinf va sinf rahbari akkaunti yaratadi
+    await page.goto('/kirish');
+    await page.fill('input[type="text"]', 'admin2');
+    await page.fill('input[type="password"]', 'admin2');
+    await page.click('button[type="submit"]');
+    await page.waitForURL('**/panel/zavuch', { timeout: 10000 });
+
+    // Zavuch sinflar bo'limiga o'tadi
+    await page.click('aside a[href="/panel/zavuch/sinflar"]');
+    await page.waitForURL('**/panel/zavuch/sinflar');
+
+    // Yangi sinf ochish modalini ochish
+    await page.click('button:has-text("Yangi sinf va sinf rahbari yaratish")');
+    await page.locator('select').first().selectOption('8');
+    await page.fill('input[placeholder*="O‘qituvchi F.I.SH"]', 'Alimova Zarina');
+    await page.fill('input[placeholder*="ustoz_login"]', 'zarina_ustoz');
+    await page.fill('input[placeholder="ustoz2026"]', 'ustoz2026');
+    await page.click('button:has-text("Sinf va Ustoz hisobini yaratish")');
+
+    await expect(page.locator('text=Sinf va Ustoz akkaunti yaratildi!')).toBeVisible();
+
+    // 2. Kirish sahifasiga o'tish va yangi o'qituvchi akkaunti bilan kirish
     await page.goto('/kirish');
     await page.fill('input[type="text"]', 'zarina_ustoz');
     await page.fill('input[type="password"]', 'ustoz2026');
     await page.click('button[type="submit"]');
 
-    // 2. /panel/ustoz ochiladi va 8-B sinf deb ko'rinadi
+    // 3. /panel/ustoz ochiladi va 8-B sinf deb ko'rinadi
     await page.waitForURL('**/panel/ustoz', { timeout: 10000 });
     await expect(page.locator('h1')).toContainText('Kunlik davomat');
     await expect(page.locator('text=8-B sinf').first()).toBeVisible();
     await expect(page.locator('text=Alimova Zarina').first()).toBeVisible();
 
-    // 3. Davomatni zavuchga yuborish
+    // 4. Davomatni zavuchga yuborish
     const submitBtn = page.locator('button:has-text("Zavuchga yuborish")');
     if (await submitBtn.isVisible()) {
       await submitBtn.click();
       await expect(page.locator('text=Zavuchga yuborilgan')).toBeVisible();
     }
 
-    // 4. Sinflarim bo'limi 8-B ga moslashgan
+    // 5. Sinflarim bo'limi 8-B ga moslashgan
     await page.click('aside a[href="/panel/ustoz/sinflar"]');
     await page.waitForURL('**/panel/ustoz/sinflar');
     await expect(page.locator('h1')).toContainText('8-B sinf');
 
-    // 5. Hisobot bo'limi 8-B ga moslashgan
+    // 6. Hisobot bo'limi 8-B ga moslashgan
     await page.click('aside a[href="/panel/ustoz/hisobot"]');
     await page.waitForURL('**/panel/ustoz/hisobot');
     await expect(page.locator('h1')).toContainText('8-B sinf');

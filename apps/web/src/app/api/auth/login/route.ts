@@ -49,7 +49,7 @@ const USERS: UserAccount[] = [
     logins: ['admin1', 'direktor', 'director'],
     passwords: [process.env.SEED_DIRECTOR_PASSWORD || 'admin1', 'admin1', 'direktor123'],
     role: 'DIRECTOR',
-    name: 'Rustamov Shavkat Akbarovich',
+    name: 'Direktor',
     redirectUrl: '/panel/direktor',
   },
   {
@@ -57,7 +57,7 @@ const USERS: UserAccount[] = [
     logins: ['admin2', 'zamdrektor', 'zamdirektor', 'zavuch'],
     passwords: [process.env.SEED_ZAVUCH_PASSWORD || 'admin2', 'admin2', 'zamdrektor123'],
     role: 'ZAVUCH',
-    name: 'Nodirova Dilnoza Alisherovna',
+    name: 'Zavuch',
     redirectUrl: '/panel/zavuch',
   },
   {
@@ -65,7 +65,7 @@ const USERS: UserAccount[] = [
     logins: ['admin3', "o'qituvchi", 'oqituvchi', 'o‘qituvchi', 'teacher1'],
     passwords: [process.env.SEED_TEACHER_PASSWORD || 'admin3', 'admin3', "o'qituvchi", 'oqituvchi'],
     role: 'TEACHER',
-    name: 'Qodirov Jamshid Baxromovich',
+    name: 'O‘qituvchi',
     className: '9-A',
     redirectUrl: '/panel/ustoz',
   },

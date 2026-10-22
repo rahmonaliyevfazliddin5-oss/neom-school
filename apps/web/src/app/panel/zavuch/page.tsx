@@ -30,25 +30,14 @@ interface ClassSubmissionItem {
 export default function ZavuchDashboardPage() {
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [counts, setCounts] = useState({
-    keldi: 684,
-    kelmadi: 18,
-    sababli: 8,
-    kechikdi: 6,
+    keldi: 0,
+    kelmadi: 0,
+    sababli: 0,
+    kechikdi: 0,
   });
 
-  const [absentStudents, setAbsentStudents] = useState<AbsenteeItem[]>([
-    { name: 'Karimova Malika', class: '9-A', teacher: 'Nodira A.', status: 'Kelmadi', statusType: 'r' },
-    { name: 'Hasanov Ali', class: '5-B', teacher: 'Dilshod R.', status: 'Kelmadi', statusType: 'r' },
-    { name: 'Ergashev Bobur', class: '11-A', teacher: 'Otabek U.', status: 'Kechikdi', statusType: 'y' },
-    { name: 'Xoliqova Ziyoda', class: '2-A', teacher: 'Nilufar A.', status: 'Sababli', statusType: 'b' },
-  ]);
-
-  const [classesProgress, setClassesProgress] = useState<ClassSubmissionItem[]>([
-    { name: '1-A', isSubmitted: true, statusText: 'Topshirdi', attendanceRate: 100 },
-    { name: '5-B', isSubmitted: true, statusText: 'Topshirdi', attendanceRate: 100 },
-    { name: '9-A', isSubmitted: true, statusText: 'Topshirdi', attendanceRate: 100 },
-    { name: '11-B', isSubmitted: false, statusText: 'Kutilmoqda', attendanceRate: 40 },
-  ]);
+  const [absentStudents, setAbsentStudents] = useState<AbsenteeItem[]>([]);
+  const [classesProgress, setClassesProgress] = useState<ClassSubmissionItem[]>([]);
 
   useEffect(() => {
     async function loadZavuchDashboard() {
@@ -66,15 +55,15 @@ export default function ZavuchDashboardPage() {
               kechikdi: data.summary.kechikdi || 0,
             });
           }
-          if (Array.isArray(data.absentees) && data.absentees.length > 0) {
+          if (Array.isArray(data.absentees)) {
             setAbsentStudents(data.absentees);
           }
-          if (Array.isArray(data.submissions) && data.submissions.length > 0) {
+          if (Array.isArray(data.submissions)) {
             setClassesProgress(data.submissions);
           }
         }
       } catch {
-        // Fallback to sample data
+        // Fallback
       }
     }
 
@@ -82,63 +71,56 @@ export default function ZavuchDashboardPage() {
   }, [selectedDate]);
 
   const totalMarked = counts.keldi + counts.kelmadi + counts.sababli + counts.kechikdi;
-  const attendancePercent = totalMarked > 0 ? Math.round((counts.keldi / totalMarked) * 100) : 96;
+  const attendancePercent =
+    totalMarked > 0 ? ((counts.keldi / totalMarked) * 100).toFixed(1) : '100.0';
 
   return (
-    <PanelShell
-      role={Role.ZAVUCH}
-      roleLabel="Zavuch · o'quv ishlari"
-      userName="Nodirova Dilnoza"
-    >
+    <PanelShell role={Role.ZAVUCH} roleLabel="Zavuch">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-[#e6f0ff] dark:bg-[#1c2c47] text-[#0066cc] dark:text-[#4d9fff] text-xs font-bold mb-1.5">
-            2026–2027 o‘quv yili
-          </div>
           <h1 className="text-[28px] font-bold text-[#0b2a5b] dark:text-white">
-            Bugungi davomat monitoringi
+            Bugungi davomat
           </h1>
           <p className="text-sm text-[#4a5f82] dark:text-[#9db4dd]">
-            Maktab bo‘yicha sinflar davomati va o‘quvchilar nazorati
+            Umumiy o&apos;quvchilar qatnashuvi va sinflar monitoringi
           </p>
         </div>
 
-        {/* Sana tanlash */}
-        <div className="flex items-center gap-2 bg-white dark:bg-[#141d2e] px-3.5 py-2 rounded-xl border border-[#ccd8e8] dark:border-[#24324d] shadow-xs">
-          <Calendar className="w-4 h-4 text-[#0066cc] dark:text-[#4d9fff]" />
-          <span className="text-xs font-semibold text-[#4a5f82] dark:text-[#9db4dd]">Sana:</span>
+        {/* Date Selector */}
+        <div className="flex items-center gap-2 bg-white dark:bg-[#121c2e] border border-[#d6e0ea] dark:border-[#24324d] rounded-xl px-3 py-2 shadow-xs">
+          <Calendar className="w-4 h-4 text-[#4a5f82] dark:text-[#9db4dd]" />
           <input
             type="date"
             value={selectedDate}
             onChange={(e) => setSelectedDate(e.target.value)}
-            className="text-xs font-bold text-[#0b2a5b] dark:text-white bg-transparent focus:outline-hidden cursor-pointer"
+            className="text-xs font-semibold text-[#0b2a5b] dark:text-white bg-transparent outline-none cursor-pointer"
           />
         </div>
       </div>
 
-      {/* Summary Cards */}
+      {/* 4 Stat Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
           label="Keldi"
           value={`${counts.keldi} nafar (${attendancePercent}%)`}
           valueColor="text-[#0d4a22]"
-          subtext={`${counts.keldi} / ${totalMarked || 716} nafar o‘quvchi`}
+          subtext={totalMarked > 0 ? `${counts.keldi} / ${totalMarked} nafar o‘quvchi` : "Darsga qatnashganlar"}
         />
         <StatCard
           label="Kelmadi"
-          value={`${counts.kelmadi} nafar (${totalMarked > 0 ? ((counts.kelmadi / totalMarked) * 100).toFixed(1) : 2.5}%)`}
+          value={`${counts.kelmadi} nafar (${totalMarked > 0 ? ((counts.kelmadi / totalMarked) * 100).toFixed(1) : 0}%)`}
           valueColor="text-[#7a1410]"
           subtext="Sababsiz qoldirganlar"
         />
         <StatCard
           label="Sababli"
-          value={`${counts.sababli} nafar (${totalMarked > 0 ? ((counts.sababli / totalMarked) * 100).toFixed(1) : 1.1}%)`}
+          value={`${counts.sababli} nafar (${totalMarked > 0 ? ((counts.sababli / totalMarked) * 100).toFixed(1) : 0}%)`}
           valueColor="text-[#0c3b7c] dark:text-[#d5e3ff]"
           subtext="Arizali o‘quvchilar"
         />
         <StatCard
           label="Kechikdi"
-          value={`${counts.kechikdi} nafar (${totalMarked > 0 ? ((counts.kechikdi / totalMarked) * 100).toFixed(1) : 0.8}%)`}
+          value={`${counts.kechikdi} nafar (${totalMarked > 0 ? ((counts.kechikdi / totalMarked) * 100).toFixed(1) : 0}%)`}
           valueColor="text-[#5c4400]"
           subtext="Kechikkan o‘quvchilar"
         />
@@ -157,36 +139,42 @@ export default function ZavuchDashboardPage() {
           </div>
 
           <div className="divide-y divide-[#e8eef7] dark:divide-[#24324d]">
-            {absentStudents.map((item, idx) => (
-              <div
-                key={idx}
-                className="py-3 flex flex-wrap items-center justify-between gap-3 text-sm"
-              >
-                <div className="flex items-center gap-3">
-                  <span className="font-bold text-[#0b2a5b] dark:text-white">
-                    {item.name}
-                  </span>
-                  <span className="text-xs font-semibold px-2 py-0.5 rounded bg-[#e8eef7] dark:bg-[#1b273d] text-[#0c3b7c] dark:text-[#5a95e5]">
-                    {item.class}
-                  </span>
-                </div>
+            {absentStudents.length > 0 ? (
+              absentStudents.map((item, idx) => (
+                <div
+                  key={idx}
+                  className="py-3 flex flex-wrap items-center justify-between gap-3 text-sm"
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="font-bold text-[#0b2a5b] dark:text-white">
+                      {item.name}
+                    </span>
+                    <span className="text-xs font-semibold px-2 py-0.5 rounded bg-[#e8eef7] dark:bg-[#1b273d] text-[#0c3b7c] dark:text-[#5a95e5]">
+                      {item.class} sinf
+                    </span>
+                  </div>
 
-                <div className="flex items-center gap-4 text-xs text-[#4a5f82] dark:text-[#9db4dd]">
-                  <span>Rahbar: {item.teacher}</span>
-                  <span
-                    className={`font-semibold px-2.5 py-1 rounded text-xs ${
-                      item.statusType === 'r'
-                        ? 'bg-[#fde0e0] text-[#7a1410]'
-                        : item.statusType === 'y'
-                        ? 'bg-[#fff3c2] text-[#5c4400]'
-                        : 'bg-[#dbe9ff] text-[#0c3b7c]'
-                    }`}
-                  >
-                    {item.status}
-                  </span>
+                  <div className="flex items-center gap-4 text-xs text-[#4a5f82] dark:text-[#9db4dd]">
+                    <span>Rahbar: {item.teacher}</span>
+                    <span
+                      className={`font-semibold px-2.5 py-1 rounded text-xs ${
+                        item.statusType === 'r'
+                          ? 'bg-[#fde0e0] text-[#7a1410]'
+                          : item.statusType === 'y'
+                          ? 'bg-[#fff3c2] text-[#5c4400]'
+                          : 'bg-[#dbe9ff] text-[#0c3b7c]'
+                      }`}
+                    >
+                      {item.status}
+                    </span>
+                  </div>
                 </div>
+              ))
+            ) : (
+              <div className="py-8 text-center text-sm text-[#4a5f82] dark:text-[#9db4dd]">
+                Bugun dars qoldirgan yoki kechikkan o‘quvchilar yo‘q (barcha o‘quvchilar to‘liq qatnashmoqda yoki davomat hali kiritilmagan).
               </div>
-            ))}
+            )}
           </div>
         </Card>
 
@@ -202,23 +190,29 @@ export default function ZavuchDashboardPage() {
           </div>
 
           <div className="divide-y divide-[#e8eef7] dark:divide-[#24324d]">
-            {classesProgress.map((cls, idx) => (
-              <div key={idx} className="py-2.5 flex items-center gap-3 text-xs">
-                <span className="w-12 font-bold text-[#0b2a5b] dark:text-white">
-                  {cls.name}
-                </span>
-                <ProgressBar value={cls.attendanceRate} className="flex-1" />
-                <span
-                  className={`w-20 text-right font-medium ${
-                    cls.isSubmitted
-                      ? 'text-[#0d4a22] font-semibold'
-                      : 'text-[#8a3d00]'
-                  }`}
-                >
-                  {cls.statusText}
-                </span>
+            {classesProgress.length > 0 ? (
+              classesProgress.map((cls, idx) => (
+                <div key={idx} className="py-2.5 flex items-center gap-3 text-xs">
+                  <span className="w-14 font-bold text-[#0b2a5b] dark:text-white">
+                    {cls.name} sinf
+                  </span>
+                  <ProgressBar value={cls.attendanceRate} className="flex-1" />
+                  <span
+                    className={`w-20 text-right font-medium ${
+                      cls.isSubmitted
+                        ? 'text-[#0d4a22] font-semibold'
+                        : 'text-[#8a3d00]'
+                    }`}
+                  >
+                    {cls.statusText}
+                  </span>
+                </div>
+              ))
+            ) : (
+              <div className="py-8 text-center text-sm text-[#4a5f82] dark:text-[#9db4dd]">
+                Hozircha birorta ham sinf ro‘yxatda yo‘q. Sinflar bo‘limidan yangi sinf yaratishingiz mumkin.
               </div>
-            ))}
+            )}
           </div>
         </Card>
       </div>
