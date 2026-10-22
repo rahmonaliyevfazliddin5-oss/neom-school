@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PanelShell } from '@/components/layout/PanelShell';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -96,6 +96,18 @@ export default function ZavuchPostsPage() {
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState<'ALL' | 'NEWS' | 'EVENT' | 'PLAN'>('ALL');
 
+  // Load live posts from API
+  useEffect(() => {
+    fetch('/api/posts')
+      .then((res) => (res.ok ? res.json() : null))
+      .then((json) => {
+        if (json?.data && Array.isArray(json.data) && json.data.length > 0) {
+          setPosts(json.data);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   // Modal states
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingPost, setEditingPost] = useState<PostItem | null>(null);
@@ -145,7 +157,7 @@ export default function ZavuchPostsPage() {
     setIsAddModalOpen(true);
   };
 
-  const handleSavePost = (e: React.FormEvent) => {
+  const handleSavePost = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formTitle.trim()) {
       toast('Sarlavhani kiriting', 'error');
@@ -154,62 +166,101 @@ export default function ZavuchPostsPage() {
 
     if (editingPost) {
       // Update
-      const updated = posts.map((p) =>
-        p.id === editingPost.id
-          ? {
-              ...p,
-              title: formTitle.trim(),
-              type: formType,
-              eventDate: formType === 'EVENT' ? formEventDate : undefined,
-              excerpt: formExcerpt.trim() || formTitle.trim(),
-              content: formContent.trim(),
-              isPublished: formPublished,
-            }
-          : p
-      );
-      setPosts(updated);
-      toast('E’lon muvaffaqiyatli yangilandi!', 'success');
+      try {
+        const res = await fetch('/api/posts', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            id: editingPost.id,
+            title: formTitle.trim(),
+            type: formType,
+            eventDate: formType === 'EVENT' ? formEventDate : undefined,
+            excerpt: formExcerpt.trim() || formTitle.trim(),
+            content: formContent.trim(),
+            isPublished: formPublished,
+          }),
+        });
+
+        if (res.ok) {
+          const json = await res.json();
+          setPosts(posts.map((p) => (p.id === editingPost.id ? json.data : p)));
+          toast('E’lon muvaffaqiyatli yangilandi!', 'success');
+        }
+      } catch {
+        toast('Saqlashda xatolik yuz berdi', 'error');
+      }
     } else {
       // Create new
-      const created: PostItem = {
-        id: `post-${Date.now()}`,
-        title: formTitle.trim(),
-        type: formType,
-        eventDate: formType === 'EVENT' ? formEventDate : undefined,
-        excerpt: formExcerpt.trim() || formTitle.trim(),
-        content: formContent.trim(),
-        publishedAt: new Date().toISOString().split('T')[0],
-        isPublished: formPublished,
-        viewsCount: 0,
-      };
-      setPosts([created, ...posts]);
-      toast('Yangi e’lon yaratildi va saqlandi!', 'success');
+      try {
+        const res = await fetch('/api/posts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title: formTitle.trim(),
+            type: formType,
+            eventDate: formType === 'EVENT' ? formEventDate : undefined,
+            excerpt: formExcerpt.trim() || formTitle.trim(),
+            content: formContent.trim(),
+            isPublished: formPublished,
+          }),
+        });
+
+        if (res.ok) {
+          const json = await res.json();
+          setPosts([json.data, ...posts]);
+          toast('Yangi e’lon yaratildi va saqlandi!', 'success');
+        }
+      } catch {
+        toast('Saqlashda xatolik yuz berdi', 'error');
+      }
     }
 
     setIsAddModalOpen(false);
   };
 
-  const handleDeletePost = (id: string, title: string) => {
+  const handleDeletePost = async (id: string, title: string) => {
     if (confirm(`"${title}" e’lonini o‘chirmoqchimisiz?`)) {
-      setPosts(posts.filter((p) => p.id !== id));
-      toast('E’lon o‘chirildi', 'success');
+      try {
+        const res = await fetch(`/api/posts?id=${encodeURIComponent(id)}`, {
+          method: 'DELETE',
+        });
+        if (res.ok) {
+          setPosts(posts.filter((p) => p.id !== id));
+          toast('E’lon o‘chirildi', 'success');
+        }
+      } catch {
+        toast('O‘chirishda xatolik yuz berdi', 'error');
+      }
     }
   };
 
-  const handleTogglePublish = (id: string) => {
-    setPosts(
-      posts.map((p) => {
-        if (p.id === id) {
-          const nextState = !p.isPublished;
-          toast(
-            nextState ? 'E’lon saytda chop etildi!' : 'E’lon qoralamaga olindi',
-            'success'
-          );
-          return { ...p, isPublished: nextState };
-        }
-        return p;
-      })
-    );
+  const handleTogglePublish = async (id: string) => {
+    const post = posts.find((p) => p.id === id);
+    if (!post) return;
+    const nextState = !post.isPublished;
+
+    try {
+      const res = await fetch('/api/posts', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id,
+          isPublished: nextState,
+        }),
+      });
+
+      if (res.ok) {
+        setPosts(
+          posts.map((p) => (p.id === id ? { ...p, isPublished: nextState } : p))
+        );
+        toast(
+          nextState ? 'E’lon saytda chop etildi!' : 'E’lon qoralamaga olindi',
+          'success'
+        );
+      }
+    } catch {
+      toast('Holatni o‘zgartirishda xatolik', 'error');
+    }
   };
 
   const getTypeBadge = (type: 'NEWS' | 'EVENT' | 'PLAN') => {

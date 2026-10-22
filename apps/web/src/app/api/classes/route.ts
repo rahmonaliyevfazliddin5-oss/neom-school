@@ -1,40 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
-
-function getFilePath(filename: string): string {
-  const dir = path.join(process.cwd(), 'data');
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
-  return path.join(dir, filename);
-}
-
-function readJsonFile(filename: string): any[] {
-  try {
-    const file = getFilePath(filename);
-    if (fs.existsSync(file)) {
-      const content = fs.readFileSync(file, 'utf-8');
-      return JSON.parse(content || '[]');
-    }
-  } catch {
-    // Ignore error
-  }
-  return [];
-}
-
-function writeJsonFile(filename: string, data: any[]) {
-  try {
-    const file = getFilePath(filename);
-    fs.writeFileSync(file, JSON.stringify(data, null, 2), 'utf-8');
-  } catch (err) {
-    console.error('Failed to write JSON file:', err);
-  }
-}
+import { readJsonSafe, writeJsonSafe } from '@/lib/safe-store';
 
 export async function GET() {
-  const customClasses = readJsonFile('custom-classes.json');
-  const customUsers = readJsonFile('custom-users.json');
+  const customClasses = readJsonSafe<any[]>('custom-classes.json', []);
+  const customUsers = readJsonSafe<any[]>('custom-users.json', []);
 
   return NextResponse.json({
     success: true,
@@ -58,6 +27,13 @@ export async function POST(req: NextRequest) {
       createTeacherAccount,
     } = body;
 
+    if (!grade || !letter) {
+      return NextResponse.json(
+        { success: false, message: 'Sinf raqami va harfi kiritilishi shart' },
+        { status: 400 }
+      );
+    }
+
     const className = `${grade}-${String(letter || '').toUpperCase().trim()}`;
 
     // 1. Create class object
@@ -77,18 +53,17 @@ export async function POST(req: NextRequest) {
     };
 
     // Save to custom-classes.json
-    const existingClasses = readJsonFile('custom-classes.json');
-    // Prevent duplicate class name
+    const existingClasses = readJsonSafe<any[]>('custom-classes.json', []);
     const updatedClasses = existingClasses.filter(
       (c) => c.name.toLowerCase() !== className.toLowerCase()
     );
     updatedClasses.unshift(newClass);
-    writeJsonFile('custom-classes.json', updatedClasses);
+    await writeJsonSafe('custom-classes.json', updatedClasses);
 
     // 2. If teacher account requested, save to custom-users.json
     let teacherAccount = null;
     if (teacherLogin && teacherPassword) {
-      const existingUsers = readJsonFile('custom-users.json');
+      const existingUsers = readJsonSafe<any[]>('custom-users.json', []);
       const normalizedLogin = String(teacherLogin).trim().toLowerCase();
 
       teacherAccount = {
@@ -101,12 +76,11 @@ export async function POST(req: NextRequest) {
         createdAt: new Date().toISOString(),
       };
 
-      // Replace if login already exists
       const filteredUsers = existingUsers.filter(
         (u) => u.login.toLowerCase() !== normalizedLogin
       );
       filteredUsers.unshift(teacherAccount);
-      writeJsonFile('custom-users.json', filteredUsers);
+      await writeJsonSafe('custom-users.json', filteredUsers);
     }
 
     return NextResponse.json({

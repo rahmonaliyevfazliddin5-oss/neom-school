@@ -34,34 +34,16 @@ export interface ClassPeriodReport {
   students: StudentReportRow[];
 }
 
-function getDataFilePath(filename: string): string {
-  const dir = path.join(process.cwd(), 'data');
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
-  return path.join(dir, filename);
-}
+import { readJsonSafe, writeJsonSafe } from '@/lib/safe-store';
 
 export function readJson<T>(filename: string, fallback: T): T {
-  try {
-    const file = getDataFilePath(filename);
-    if (fs.existsSync(file)) {
-      const content = fs.readFileSync(file, 'utf-8');
-      return JSON.parse(content || 'null') ?? fallback;
-    }
-  } catch {
-    // Ignore error
-  }
-  return fallback;
+  return readJsonSafe<T>(filename, fallback);
 }
 
 export function writeJson(filename: string, data: any) {
-  try {
-    const file = getDataFilePath(filename);
-    fs.writeFileSync(file, JSON.stringify(data, null, 2), 'utf-8');
-  } catch (err) {
-    console.error('Failed to write JSON:', err);
-  }
+  writeJsonSafe(filename, data).catch((err) => {
+    console.error('Failed to write JSON in reports-store:', err);
+  });
 }
 
 export const ACADEMIC_MONTHS = [

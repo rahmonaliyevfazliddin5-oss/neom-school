@@ -1,36 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
-
-function getFilePath(filename: string): string {
-  const dir = path.join(process.cwd(), 'data');
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
-  return path.join(dir, filename);
-}
-
-function readJsonFile<T>(filename: string, defaultValue: T): T {
-  try {
-    const file = getFilePath(filename);
-    if (fs.existsSync(file)) {
-      const content = fs.readFileSync(file, 'utf-8');
-      return JSON.parse(content || 'null') ?? defaultValue;
-    }
-  } catch {
-    // Ignore error
-  }
-  return defaultValue;
-}
-
-function writeJsonFile(filename: string, data: any) {
-  try {
-    const file = getFilePath(filename);
-    fs.writeFileSync(file, JSON.stringify(data, null, 2), 'utf-8');
-  } catch (err) {
-    console.error('Failed to write JSON file:', err);
-  }
-}
+import { readJsonSafe, writeJsonSafe } from '@/lib/safe-store';
 
 function parseJwtPayload(token: string) {
   try {
@@ -98,7 +67,7 @@ export async function GET(req: NextRequest) {
   const teacherClassName = String(payload.className || '9-A').trim();
 
   // Load custom classes
-  const customClasses = readJsonFile<any[]>('custom-classes.json', []);
+  const customClasses = readJsonSafe<any[]>('custom-classes.json', []);
   const matchedClass = customClasses.find(
     (c) => c.name?.toLowerCase() === teacherClassName.toLowerCase()
   );
@@ -107,11 +76,10 @@ export async function GET(req: NextRequest) {
   const studentsCount = matchedClass?.studentsCount || 26;
 
   // Load students for this class
-  const classStudentsMap = readJsonFile<Record<string, any[]>>('class-students.json', {});
+  const classStudentsMap = readJsonSafe<Record<string, any[]>>('class-students.json', {});
   let classStudents = classStudentsMap[teacherClassName];
 
   if (!classStudents || classStudents.length === 0) {
-    // Generate default roster for this class
     const count = Math.min(studentsCount, DEFAULT_NAMES.length);
     classStudents = Array.from({ length: count }, (_, idx) => ({
       id: `std-${teacherClassName.replace(/[^a-zA-Z0-9]/g, '')}-${idx + 1}`,
@@ -122,11 +90,11 @@ export async function GET(req: NextRequest) {
       attendanceRate: 100,
     }));
     classStudentsMap[teacherClassName] = classStudents;
-    writeJsonFile('class-students.json', classStudentsMap);
+    await writeJsonSafe('class-students.json', classStudentsMap);
   }
 
   // Load attendance records for this class & date
-  const attendanceRecords = readJsonFile<Record<string, any>>('attendance-records.json', {});
+  const attendanceRecords = readJsonSafe<Record<string, any>>('attendance-records.json', {});
   const recordKey = `${classId}_${dateStr}`;
   const dayRecord = attendanceRecords[recordKey] || {
     isSubmitted: matchedClass?.isSubmitted || false,

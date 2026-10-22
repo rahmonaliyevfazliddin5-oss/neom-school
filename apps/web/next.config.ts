@@ -8,16 +8,7 @@ const nextConfig: NextConfig = {
   productionBrowserSourceMaps: false,
   transpilePackages: ['@neom/shared'],
   async rewrites() {
-    if (!process.env.API_INTERNAL_URL && !process.env.INTERNAL_API_URL) {
-      return [];
-    }
-    const rawApiUrl = (process.env.API_INTERNAL_URL || process.env.INTERNAL_API_URL || '').replace(/\/api\/?$/, '');
-    return [
-      {
-        source: '/api/:path*',
-        destination: `${rawApiUrl}/api/:path*`,
-      },
-    ];
+    return [];
   },
 };
 

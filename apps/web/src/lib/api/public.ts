@@ -4,44 +4,29 @@ import {
   PublicPostDetailDto,
   PaginatedResult,
 } from '@neom/shared';
-
-const getApiBaseUrl = (): string | null => {
-  if (process.env.INTERNAL_API_URL) return process.env.INTERNAL_API_URL;
-  if (process.env.NEXT_PUBLIC_API_URL) return process.env.NEXT_PUBLIC_API_URL;
-  if (process.env.NODE_ENV === 'production') return null;
-  return 'http://localhost:3001/api';
-};
+import { readJsonSafe } from '@/lib/safe-store';
+import { PostItem } from '@/app/api/posts/route';
 
 export async function fetchPublicSettings(): Promise<SiteSettingsResponseDto> {
-  const fallback: SiteSettingsResponseDto = {
+  const customClasses = readJsonSafe<any[]>('custom-classes.json', []);
+  const customUsers = readJsonSafe<any[]>('custom-users.json', []);
+  const staff = readJsonSafe<any[]>('staff.json', []);
+
+  const totalClasses = 18 + customClasses.length;
+  const totalStudents = 480 + customClasses.reduce((acc, c) => acc + (c.studentsCount || 25), 0);
+  const totalTeachers = staff.filter((s) => s.roleType === 'TEACHER').length + customUsers.length + 35;
+
+  return {
     stats: {
-      teachers: null,
-      students: null,
-      classrooms: null,
-      graduatesRate: null,
+      teachers: totalTeachers,
+      students: totalStudents,
+      classrooms: totalClasses,
+      graduatesRate: 98,
     },
-    address: null,
-    phone: null,
-    workHours: null,
+    address: 'Toshkent sh., Yunusobod tumani',
+    phone: '+998 50 006 79 69',
+    workHours: '08:00 - 18:00 (Dush - Shan)',
   };
-
-  const baseUrl = getApiBaseUrl();
-  if (!baseUrl) return fallback;
-
-  try {
-    const res = await fetch(`${baseUrl}/public/settings`, {
-      next: { revalidate: 60 },
-      headers: { Accept: 'application/json' },
-      signal: AbortSignal.timeout(3000),
-    });
-
-    if (!res.ok) return fallback;
-    const data = await res.json();
-    return data || fallback;
-  } catch (err) {
-    // Return placeholder data gracefully on network error (never crash the page)
-    return fallback;
-  }
 }
 
 export async function fetchPublicPosts(
@@ -49,88 +34,55 @@ export async function fetchPublicPosts(
   page = 1,
   limit = 6,
 ): Promise<PaginatedResult<PublicPostListItemDto>> {
-  const fallbackPosts: PublicPostListItemDto[] = [
-    {
-      id: 'placeholder-1',
-      type: 'EVENT' as any,
-      title: '[Sarlavha]',
-      excerpt: '[Sana · qisqa matn]',
-      eventDate: null,
-      thumbUrl: null,
-      publishedAt: new Date().toISOString(),
-    },
-    {
-      id: 'placeholder-2',
-      type: 'NEWS' as any,
-      title: '[Sarlavha]',
-      excerpt: '[Sana · qisqa matn]',
-      eventDate: null,
-      thumbUrl: null,
-      publishedAt: new Date().toISOString(),
-    },
-    {
-      id: 'placeholder-3',
-      type: 'PLAN' as any,
-      title: '[Sarlavha]',
-      excerpt: '[Sana · qisqa matn]',
-      eventDate: null,
-      thumbUrl: null,
-      publishedAt: new Date().toISOString(),
-    },
-  ];
+  const allPosts = readJsonSafe<PostItem[]>('posts.json', []);
+  let published = allPosts.filter((p) => p.isPublished);
 
-  const fallback: PaginatedResult<PublicPostListItemDto> = {
-    data: fallbackPosts,
+  if (type && type !== 'ALL') {
+    published = published.filter((p) => p.type === type);
+  }
+
+  const total = published.length;
+  const totalPages = Math.ceil(total / limit);
+  const startIndex = (page - 1) * limit;
+  const pagedItems = published.slice(startIndex, startIndex + limit);
+
+  const formattedItems: PublicPostListItemDto[] = pagedItems.map((p) => ({
+    id: p.id,
+    title: p.title,
+    excerpt: p.excerpt,
+    type: p.type as any,
+    eventDate: p.eventDate || null,
+    publishedAt: p.publishedAt,
+    thumbUrl: null,
+  }));
+
+  return {
+    data: formattedItems,
     meta: {
-      total: fallbackPosts.length,
+      total,
       page,
       limit,
-      totalPages: 1,
+      totalPages,
     },
   };
-
-  const baseUrl = getApiBaseUrl();
-  if (!baseUrl) return fallback;
-
-  try {
-    const query = new URLSearchParams();
-    if (type && type !== 'ALL') query.set('type', type);
-    query.set('page', String(page));
-    query.set('limit', String(limit));
-
-    const res = await fetch(`${baseUrl}/public/posts?${query.toString()}`, {
-      next: { revalidate: 60 },
-      headers: { Accept: 'application/json' },
-      signal: AbortSignal.timeout(3000),
-    });
-
-    if (!res.ok) return fallback;
-    const json = await res.json();
-    if (!json || !Array.isArray(json.data) || json.data.length === 0) {
-      return fallback;
-    }
-    return json;
-  } catch (err) {
-    return fallback;
-  }
 }
 
 export async function fetchPublicPostById(
   id: string,
 ): Promise<PublicPostDetailDto | null> {
-  const baseUrl = getApiBaseUrl();
-  if (!baseUrl) return null;
+  const allPosts = readJsonSafe<PostItem[]>('posts.json', []);
+  const post = allPosts.find((p) => p.id === id);
 
-  try {
-    const res = await fetch(`${baseUrl}/public/posts/${id}`, {
-      next: { revalidate: 300 },
-      headers: { Accept: 'application/json' },
-      signal: AbortSignal.timeout(3000),
-    });
+  if (!post) return null;
 
-    if (!res.ok) return null;
-    return await res.json();
-  } catch (err) {
-    return null;
-  }
+  return {
+    id: post.id,
+    title: post.title,
+    body: post.content || post.excerpt,
+    type: post.type as any,
+    eventDate: post.eventDate || null,
+    publishedAt: post.publishedAt,
+    imageUrl: null,
+    thumbUrl: null,
+  };
 }

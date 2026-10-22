@@ -1,27 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
-
-function getFilePath(filename: string): string {
-  const dir = path.join(process.cwd(), 'data');
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
-  return path.join(dir, filename);
-}
-
-function readJsonFile<T>(filename: string, defaultValue: T): T {
-  try {
-    const file = getFilePath(filename);
-    if (fs.existsSync(file)) {
-      const content = fs.readFileSync(file, 'utf-8');
-      return JSON.parse(content || 'null') ?? defaultValue;
-    }
-  } catch {
-    // Ignore error
-  }
-  return defaultValue;
-}
+import { readJsonSafe } from '@/lib/safe-store';
 
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
@@ -36,8 +14,8 @@ export async function GET(req: NextRequest) {
   ];
 
   // Custom classes
-  const customClasses = readJsonFile<any[]>('custom-classes.json', []);
-  const attendanceRecords = readJsonFile<Record<string, any>>('attendance-records.json', {});
+  const customClasses = readJsonSafe<any[]>('custom-classes.json', []);
+  const attendanceRecords = readJsonSafe<Record<string, any>>('attendance-records.json', {});
 
   const customSubmissions = customClasses.map((c) => {
     const recordKey = `${c.id}_${dateStr}`;
@@ -68,9 +46,9 @@ export async function GET(req: NextRequest) {
     submissions: allSubmissions,
     absentees: [
       { name: 'Karimova Malika', class: '9-A', teacher: 'Nodira A.', status: 'Kelmadi', statusType: 'r' },
-      { name: 'Hasanov Ali', class: '5-B', teacher: 'Dilshod R.', status: 'Kelmadi', statusType: 'r' },
-      { name: 'Ergashev Bobur', class: '11-A', teacher: 'Otabek U.', status: 'Kechikdi', statusType: 'y' },
-      { name: 'Xoliqova Ziyoda', class: '2-A', teacher: 'Nilufar A.', status: 'Sababli', statusType: 'b' },
+      { name: 'Saidova Madina', class: '9-A', teacher: 'Nodira A.', status: 'Kechikdi', statusType: 'y' },
+      { name: 'Hasanov Ali', class: '9-A', teacher: 'Nodira A.', status: 'Sababli', statusType: 'y' },
+      { name: 'Ergashev Bobur', class: '11-B', teacher: 'Jamshid Q.', status: 'Kelmadi', statusType: 'r' },
     ],
   });
 }

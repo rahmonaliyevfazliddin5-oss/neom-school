@@ -1,0 +1,55 @@
+[
+  {
+    "id": "post-1",
+    "title": "Neom School 2026-2027 o‘quv yili uchun qabul jarayoni boshlandi",
+    "type": "NEWS",
+    "excerpt": "1-sinfdan 11-sinfgacha bo‘lgan o‘quvchilar uchun saralash imtihonlari va qabul ochiq deb e’lon qilindi.",
+    "content": "Neom School — zamonaviy ta’lim standartlari asosida o‘quvchilarga ilm va tarbiya beruvchi maskan. Qabul shartlari va test sinovlari haqida to‘liq ma’lumot olish uchun administrator bilan bog‘laning. Maktabimizda o‘quvchilar individual yondashuv, zamonaviy robototexnika va xorijiy tillarni chuqur o‘rganish imkoniyatiga ega bo‘ladilar.",
+    "publishedAt": "2026-10-18T09:00:00.000Z",
+    "isPublished": true,
+    "viewsCount": 421
+  },
+  {
+    "id": "post-2",
+    "title": "IELTS va SAT xalqaro sertifikatlariga tayyorlov master-klassi",
+    "type": "EVENT",
+    "eventDate": "2026-10-25",
+    "excerpt": "Xalqaro imtihonlarda yuqori ball (IELTS 8.0+, SAT 1450+) to‘plagan ustozlarimizdan maxsus master-klass.",
+    "content": "O‘quvchilarimiz va repetitorlik kurslari tinglovchilari uchun mo‘ljallangan ochiq dars maktabning asosiy faollar zalida bo‘lib o‘tadi. Dars davomida xalqaro nufuzli universitetlarga grant yutish strategiyalari va test topshirish sirlari o‘rgatiladi.",
+    "publishedAt": "2026-10-15T11:30:00.000Z",
+    "isPublished": true,
+    "viewsCount": 310
+  },
+  {
+    "id": "post-3",
+    "title": "Kuzgi ta’til davrida o‘quvchilar o‘rtasida Shaxmat va Zakovat turniri",
+    "type": "EVENT",
+    "eventDate": "2026-11-04",
+    "excerpt": "Barcha sinflar o‘rtasida an’anaviy aqliy bellashuv va qimmatbaho sovg‘alar sovrini.",
+    "content": "Turnirda 1-11 sinf o‘quvchilari qatnashishi mumkin. Bellashuvlar shveytsarcha tizimda o‘tkazilib, g‘oliblarga maxsus diplom va esdalik sovg‘alari topshiriladi.",
+    "publishedAt": "2026-10-12T14:00:00.000Z",
+    "isPublished": true,
+    "viewsCount": 285
+  },
+  {
+    "id": "post-4",
+    "title": "2026-2027 o‘quv yili 2-chorak ta’lim rejasi va fan olimpiadalari",
+    "type": "PLAN",
+    "excerpt": "Matematika, fizika va ingliz tili fanlari bo‘yicha maktab bosqichi olimpiadasi rejalari tasdiqlandi.",
+    "content": "Iqtidorli o‘quvchilarni aniqlash va xalqaro olimpiadalarga yo‘naltirish bo‘yicha maxsus guruhlar tashkil etilmoqda. O‘qituvchilarimiz har bir iqtidorli o‘quvchi bilan maxsus dastur asosida shug‘ullanadilar.",
+    "publishedAt": "2026-10-10T10:00:00.000Z",
+    "isPublished": true,
+    "viewsCount": 195
+  },
+  {
+    "id": "post-5",
+    "title": "Ota-onalar bilan umumiy yig‘ilish va chorak monitoringi muhokamasi",
+    "type": "EVENT",
+    "eventDate": "2026-10-28",
+    "excerpt": "O‘quvchilarning 1-chorak davomati va o‘zlashtirish ko‘rsatkichlari bo‘yicha ochiq hisobot yig‘ilishi.",
+    "content": "Barcha sinf rahbarlari va fan o‘qituvchilari ishtirokida ota-onalar bilan yuzma-yuz suhbatlar rejalashtirilgan. Maktab faollar zalida o‘tkaziladigan yig‘ilishda farzandingizning choraklik hisoboti taqdim etiladi.",
+    "publishedAt": "2026-10-08T16:00:00.000Z",
+    "isPublished": true,
+    "viewsCount": 160
+  }
+]

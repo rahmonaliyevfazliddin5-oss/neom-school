@@ -1,36 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
-
-function getFilePath(filename: string): string {
-  const dir = path.join(process.cwd(), 'data');
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
-  return path.join(dir, filename);
-}
-
-function readJsonFile<T>(filename: string, defaultValue: T): T {
-  try {
-    const file = getFilePath(filename);
-    if (fs.existsSync(file)) {
-      const content = fs.readFileSync(file, 'utf-8');
-      return JSON.parse(content || 'null') ?? defaultValue;
-    }
-  } catch {
-    // Ignore error
-  }
-  return defaultValue;
-}
-
-function writeJsonFile(filename: string, data: any) {
-  try {
-    const file = getFilePath(filename);
-    fs.writeFileSync(file, JSON.stringify(data, null, 2), 'utf-8');
-  } catch (err) {
-    console.error('Failed to write JSON file:', err);
-  }
-}
+import { readJsonSafe, writeJsonSafe } from '@/lib/safe-store';
 
 export async function POST(req: NextRequest) {
   try {
@@ -47,24 +16,41 @@ export async function POST(req: NextRequest) {
     const dateStr = date || new Date().toISOString().split('T')[0];
     const recordKey = `${classId}_${dateStr}`;
 
-    const records = readJsonFile<Record<string, any>>('attendance-records.json', {});
+    const records = readJsonSafe<Record<string, any>>('attendance-records.json', {});
+
     if (!records[recordKey]) {
       records[recordKey] = {
         isSubmitted: false,
         marks: {},
+        attendanceRate: 100,
+        updatedAt: new Date().toISOString(),
       };
     }
 
     records[recordKey].marks[studentId] = status;
-    writeJsonFile('attendance-records.json', records);
+    records[recordKey].updatedAt = new Date().toISOString();
+
+    // Recalculate attendanceRate
+    const marksList = Object.values(records[recordKey].marks);
+    const presentCount = marksList.filter(
+      (s) => s === 'KELDI' || s === 'KECHIKDI'
+    ).length;
+    if (marksList.length > 0) {
+      records[recordKey].attendanceRate = Math.round(
+        (presentCount / marksList.length) * 100
+      );
+    }
+
+    await writeJsonSafe('attendance-records.json', records);
 
     return NextResponse.json({
       success: true,
-      message: 'Davomat holati muvaffaqiyatli saqlandi',
+      message: 'Davomat belgilandi',
+      attendanceRate: records[recordKey].attendanceRate,
     });
   } catch (err: any) {
     return NextResponse.json(
-      { success: false, message: err?.message || 'Davomatni saqlashda xatolik' },
+      { success: false, message: err?.message || 'Server xatoligi' },
       { status: 500 }
     );
   }

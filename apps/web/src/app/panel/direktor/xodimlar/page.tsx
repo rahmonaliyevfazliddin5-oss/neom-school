@@ -129,7 +129,7 @@ export default function DirectorStaffPage() {
     return matchesSearch && matchesRole;
   });
 
-  const handleAddStaff = (e: React.FormEvent) => {
+  const handleAddStaff = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newFullName.trim() || !newSubject.trim()) {
       toast("Iltimos, F.I.SH va fan/sinf ma'lumotini to'ldiring", 'error');
@@ -140,26 +140,45 @@ export default function DirectorStaffPage() {
     if (newRole === 'DIRECTOR') roleTitle = 'Direktorat a’zosi';
     if (newRole === 'ZAVUCH') roleTitle = 'O‘quv bo‘limi / Zavuch';
 
-    const newMember: StaffMember = {
-      id: `st-${Date.now()}`,
-      fullName: newFullName.trim(),
-      role: roleTitle,
-      roleType: newRole,
-      subjectOrClass: newSubject.trim(),
-      phone: newPhone.trim() || '+998 90 000 00 00',
-      isActive: true,
-      joinedDate: new Date().toISOString().split('T')[0],
-    };
+    try {
+      const res = await fetch('/api/staff', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fullName: newFullName.trim(),
+          role: roleTitle,
+          roleType: newRole,
+          subjectOrClass: newSubject.trim(),
+          phone: newPhone.trim(),
+        }),
+      });
 
-    setStaffList([newMember, ...staffList]);
-    setShowAddModal(false);
-    setNewFullName('');
-    setNewSubject('');
-    setNewPhone('');
-    toast("Yangi xodim muvaffaqiyatli qo'shildi!", 'success');
+      if (res.ok) {
+        const json = await res.json();
+        setStaffList([json.data, ...staffList]);
+        setShowAddModal(false);
+        setNewFullName('');
+        setNewSubject('');
+        setNewPhone('');
+        toast("Yangi xodim muvaffaqiyatli qo'shildi!", 'success');
+      } else {
+        toast("Saqlashda xatolik yuz berdi", 'error');
+      }
+    } catch {
+      toast("Serverga ulanishda xatolik", 'error');
+    }
   };
 
   useEffect(() => {
+    fetch('/api/staff')
+      .then((res) => (res.ok ? res.json() : null))
+      .then((json) => {
+        if (json?.data && Array.isArray(json.data) && json.data.length > 0) {
+          setStaffList(json.data);
+        }
+      })
+      .catch(() => {});
+
     fetch('/api/auth/me', { credentials: 'include' })
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
