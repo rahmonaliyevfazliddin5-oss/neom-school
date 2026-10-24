@@ -1,22 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-
-function parseJwtPayload(token: string) {
-  try {
-    const parts = token.split('.');
-    if (parts.length !== 3) return null;
-    const base64Url = parts[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const json = atob(base64);
-    const payload = JSON.parse(json);
-
-    if (payload.exp && Date.now() >= payload.exp * 1000) {
-      return null;
-    }
-    return payload;
-  } catch {
-    return null;
-  }
-}
+import { verifyJwt } from '@/lib/jwt';
 
 export async function GET(req: NextRequest) {
   const token = req.cookies.get('neom_access_token')?.value;
@@ -24,7 +7,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ message: 'Ruxsatsiz' }, { status: 401 });
   }
 
-  const payload = parseJwtPayload(token);
+  const payload = await verifyJwt(token);
   if (!payload || !payload.sub || !payload.role) {
     return NextResponse.json({ message: 'Ruxsatsiz' }, { status: 401 });
   }

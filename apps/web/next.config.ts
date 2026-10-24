@@ -44,7 +44,7 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        source: '/(snap-|logo-).*\\.(png|jpg|jpeg|svg|webp|ico)',
+        source: '/_next/image/:path*',
         headers: [
           {
             key: 'Cache-Control',

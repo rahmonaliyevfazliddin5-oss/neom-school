@@ -1,26 +1,8 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { verifyJwt } from '@/lib/jwt';
 
-function parseJwtPayload(token: string) {
-  try {
-    const parts = token.split('.');
-    if (parts.length !== 3) return null;
-    const base64Url = parts[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const json = atob(base64);
-    const payload = JSON.parse(json);
-
-    // Check expiration
-    if (payload.exp && Date.now() >= payload.exp * 1000) {
-      return null;
-    }
-    return payload;
-  } catch {
-    return null;
-  }
-}
-
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Protect all /panel and /panel/* routes
@@ -48,9 +30,9 @@ export function middleware(request: NextRequest) {
       });
     }
 
-    const payload = parseJwtPayload(accessToken);
+    const payload = await verifyJwt(accessToken);
     if (!payload || !payload.sub || !payload.role) {
-      // Invalid or expired token -> 404 rewrite
+      // Invalid, forged or expired token -> 404 rewrite
       return NextResponse.rewrite(new URL('/not-found', request.url), {
         status: 404,
       });

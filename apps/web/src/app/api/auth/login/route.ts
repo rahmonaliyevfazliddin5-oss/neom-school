@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
+import { createJwt, JWT_SECRET } from '@/lib/jwt';
 
 interface UserAccount {
   id: string;
@@ -71,23 +72,45 @@ const USERS: UserAccount[] = [
   },
 ];
 
-const JWT_SECRET =
-  process.env.JWT_SECRET ||
-  'neom_school_super_secure_jwt_access_token_secret_key_2026_xyz_789';
+// In-memory brute-force rate limiter: ip -> { count, resetAt }
+const failedAttempts = new Map<string, { count: number; resetAt: number }>();
 
-function createJwt(payload: Record<string, any>, secret: string): string {
-  const header = { alg: 'HS256', typ: 'JWT' };
-  const encodedHeader = Buffer.from(JSON.stringify(header)).toString('base64url');
-  const encodedPayload = Buffer.from(JSON.stringify(payload)).toString('base64url');
-  const signature = crypto
-    .createHmac('sha256', secret)
-    .update(`${encodedHeader}.${encodedPayload}`)
-    .digest('base64url');
-  return `${encodedHeader}.${encodedPayload}.${signature}`;
+function isIpRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const entry = failedAttempts.get(ip);
+  if (!entry) return false;
+  if (now > entry.resetAt) {
+    failedAttempts.delete(ip);
+    return false;
+  }
+  return entry.count >= 30; // Max 30 failed attempts per 60s
+}
+
+function recordFailedAttempt(ip: string) {
+  const now = Date.now();
+  const entry = failedAttempts.get(ip);
+  if (!entry || now > entry.resetAt) {
+    failedAttempts.set(ip, { count: 1, resetAt: now + 60 * 1000 });
+  } else {
+    entry.count += 1;
+  }
+}
+
+function clearFailedAttempts(ip: string) {
+  failedAttempts.delete(ip);
 }
 
 export async function POST(req: NextRequest) {
   try {
+    const ip = req.headers.get('x-forwarded-for')?.split(',')[0].trim() || '127.0.0.1';
+
+    if (isIpRateLimited(ip)) {
+      return NextResponse.json(
+        { success: false, message: 'Ko‘p marta xato urinishlar qilindi. Iltimos, 1 daqiqadan so‘ng qayta urinib ko‘ring.' },
+        { status: 429, headers: { 'Retry-After': '60' } }
+      );
+    }
+
     const body = await req.json().catch(() => ({}));
     const rawLogin = String(body.login || '').trim().toLowerCase().normalize('NFKC');
     const rawPassword = String(body.password || '');
@@ -108,6 +131,7 @@ export async function POST(req: NextRequest) {
     );
 
     if (!matchedUser) {
+      recordFailedAttempt(ip);
       // Simulate verification latency against timing attacks
       await new Promise((resolve) => setTimeout(resolve, 80));
       return NextResponse.json(
@@ -115,6 +139,8 @@ export async function POST(req: NextRequest) {
         { status: 401 }
       );
     }
+
+    clearFailedAttempts(ip);
 
     const nowSeconds = Math.floor(Date.now() / 1000);
     const tokenPayload = {
@@ -126,7 +152,7 @@ export async function POST(req: NextRequest) {
       exp: nowSeconds + 12 * 60 * 60, // 12 hours
     };
 
-    const accessToken = createJwt(tokenPayload, JWT_SECRET);
+    const accessToken = await createJwt(tokenPayload, JWT_SECRET);
     const refreshToken = crypto.randomBytes(32).toString('hex');
     const csrfToken = crypto.randomBytes(24).toString('hex');
 
