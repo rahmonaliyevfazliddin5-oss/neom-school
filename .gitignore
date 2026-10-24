@@ -24,3 +24,4 @@ __pycache__/
 venv/
 test-results/
 playwright-report/
+promo/raw-recordings/
