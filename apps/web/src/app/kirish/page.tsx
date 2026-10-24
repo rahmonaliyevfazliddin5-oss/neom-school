@@ -68,8 +68,9 @@ export default function LoginPage() {
 
       toast("Muvaffaqiyatli kirildi!", 'success');
 
-      // Wipe password from memory state
+      // Wipe password and login from memory state
       setPassword('');
+      setLogin('');
 
       const data = result?.data || result;
       if (data?.redirectUrl) {
@@ -100,7 +101,11 @@ export default function LoginPage() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <form
+          onSubmit={handleSubmit}
+          autoComplete="off"
+          className="flex flex-col gap-4"
+        >
           {/* Login Input */}
           <div className="flex flex-col gap-1.5 w-full">
             <label
@@ -111,8 +116,13 @@ export default function LoginPage() {
             </label>
             <input
               id="login"
+              name="login"
               type="text"
-              autoComplete="username"
+              autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="none"
+              spellCheck={false}
+              aria-autocomplete="none"
               value={login}
               onChange={(e) => setLogin(e.target.value)}
               className="border border-[#b9c8e2] rounded-[10px] px-3.5 py-2.5 text-[14px] min-h-[44px] w-full text-[#0b2a5b] bg-white outline-none focus:border-[#0c3b7c] focus:ring-2 focus:ring-[#0c3b7c]/15 dark:bg-[#141d2e] dark:border-[#324466] dark:text-white"
@@ -131,8 +141,13 @@ export default function LoginPage() {
             <div className="relative">
               <input
                 id="password"
+                name="password"
                 type={showPassword ? 'text' : 'password'}
-                autoComplete="current-password"
+                autoComplete="new-password"
+                autoCorrect="off"
+                autoCapitalize="none"
+                spellCheck={false}
+                aria-autocomplete="none"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="border border-[#b9c8e2] rounded-[10px] px-3.5 py-2.5 pr-11 text-[14px] min-h-[44px] w-full text-[#0b2a5b] bg-white outline-none focus:border-[#0c3b7c] focus:ring-2 focus:ring-[#0c3b7c]/15 dark:bg-[#141d2e] dark:border-[#324466] dark:text-white"
