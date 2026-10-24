@@ -88,7 +88,7 @@ export const StatsCard: React.FC<StatsCardProps> = ({ stats }) => {
     }
 
     return () => observer.disconnect();
-  }, [hasAnimated]);
+  }, [hasAnimated, safeStats.teachers, safeStats.students, safeStats.classrooms, safeStats.graduatesRate]);
 
   // Formatter: displays animated values with suffix
   const formatCount = (val: number, animatedVal: number, suffix = '+') => {

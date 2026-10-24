@@ -139,6 +139,8 @@ export default async function GuestHomePage() {
                 <img
                   src="/logo-shield.png"
                   alt="Neom School Katta Logosi"
+                  loading="eager"
+                  decoding="async"
                   className="w-auto h-full max-h-[280px] sm:max-h-[340px] object-contain drop-shadow-[0_15px_30px_rgba(0,0,0,0.4)] group-hover:drop-shadow-[0_20px_40px_rgba(247,139,45,0.45)] transition-all duration-300"
                 />
                 <div className="mt-4 px-5 py-1.5 rounded-full bg-white/15 backdrop-blur-md border border-white/25 text-white font-extrabold text-sm tracking-wider uppercase shadow-xs">
@@ -177,6 +179,8 @@ export default async function GuestHomePage() {
             <img
               src="/logo-shield.png"
               alt="NEOM SCHOOL Rasmiy Logosi"
+              loading="lazy"
+              decoding="async"
               className="max-h-[260px] md:max-h-[300px] w-auto object-contain drop-shadow-xl group-hover:scale-105 transition-transform duration-300"
             />
             <div className="mt-5 flex flex-col items-center gap-1">

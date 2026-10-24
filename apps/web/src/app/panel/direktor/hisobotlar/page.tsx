@@ -79,7 +79,7 @@ export default function DirectorReportsPage() {
         statusText: status,
       };
     });
-  }, [customClassesList, selectedMonth]);
+  }, [customClassesList]);
 
   const filteredRows = mergedReportData.filter((row) => {
     const gradeNum = parseInt(row.className.split('-')[0], 10);
