@@ -1,0 +1,16 @@
+[
+  {
+    "id": "class-1792819387852",
+    "name": "8-B",
+    "grade": 8,
+    "letter": "B",
+    "teacher": "Alimova Zarina",
+    "teacherLogin": "zarina_ustoz",
+    "teacherPassword": "ustoz2026",
+    "studentsCount": 25,
+    "room": "204-xona",
+    "attendanceRate": 100,
+    "isSubmitted": true,
+    "createdAt": "2026-10-24T05:23:07.852Z"
+  }
+]

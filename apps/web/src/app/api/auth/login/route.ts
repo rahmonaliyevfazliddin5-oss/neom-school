@@ -3,12 +3,13 @@ import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
 import { createJwt, JWT_SECRET } from '@/lib/jwt';
+import { recordPresenceActivity } from '@/lib/presence-store';
 
 interface UserAccount {
   id: string;
   logins: string[];
   passwords: string[];
-  role: 'DIRECTOR' | 'ZAVUCH' | 'TEACHER';
+  role: 'DIRECTOR' | 'ZAVUCH' | 'TEACHER' | 'SUPER_ADMIN';
   name: string;
   className?: string;
   redirectUrl: string;
@@ -69,6 +70,14 @@ const USERS: UserAccount[] = [
     name: 'O‘qituvchi',
     className: '9-A',
     redirectUrl: '/panel/ustoz',
+  },
+  {
+    id: 'user-superadmin-0727',
+    logins: ['admin0727'],
+    passwords: [process.env.SEED_SUPERADMIN_PASSWORD || 'admin0727'],
+    role: 'SUPER_ADMIN',
+    name: 'Nazoratchi (Super Admin)',
+    redirectUrl: '/panel/super-admin',
   },
 ];
 
@@ -141,6 +150,16 @@ export async function POST(req: NextRequest) {
     }
 
     clearFailedAttempts(ip);
+
+    recordPresenceActivity({
+      role: matchedUser.role,
+      userName: matchedUser.name,
+      path: matchedUser.redirectUrl,
+      ip,
+      userAgent: req.headers.get('user-agent') || '',
+      eventType: 'LOGIN',
+      details: `${matchedUser.name} tizimga kirdi (${matchedUser.redirectUrl})`,
+    });
 
     const nowSeconds = Math.floor(Date.now() / 1000);
     const tokenPayload = {

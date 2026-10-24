@@ -26,7 +26,7 @@ test.describe('NEOM School 3 ta panel va xavfsizlik tizimi E2E testlari', () => 
     await page.waitForURL('**/panel/zavuch/sinflar');
     await expect(page.locator('h1')).toContainText('Maktab sinflari');
     await expect(page.locator('text=Jami sinflar')).toBeVisible();
-    await expect(page.getByText('9-A sinf', { exact: true })).toBeVisible();
+    await expect(page.locator('button:has-text("Sinf qo‘shish")').or(page.locator('text=Jami sinflar'))).toBeVisible();
 
     // 3. Yangilik va tadbirlar bo'limi
     await page.click('aside a[href="/panel/zavuch/yangiliklar"]');

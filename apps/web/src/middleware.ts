@@ -7,15 +7,14 @@ export async function middleware(request: NextRequest) {
 
   // Protect all /panel and /panel/* routes
   if (pathname === '/panel' || pathname.startsWith('/panel/')) {
-    // 1. Strict whitelist: Exactly 3 panels exist in NEOM School (Direktor, Zavuch, Ustoz)
-    // No other panels (e.g. /panel/admin, /panel/manager, /panel/boshqa) exist or can be accessed.
-    const isAllowedPanel =
+    const isSuperAdminPanel = pathname.startsWith('/panel/super-admin');
+    const isStandardPanel =
       pathname.startsWith('/panel/direktor') ||
       pathname.startsWith('/panel/zavuch') ||
       pathname.startsWith('/panel/ustoz');
 
-    if (!isAllowedPanel) {
-      // Return 404 so unauthorized/fake paths appear completely non-existent
+    // Only allow known panel routes; anything else is rewritten to 404
+    if (!isStandardPanel && !isSuperAdminPanel) {
       return NextResponse.rewrite(new URL('/not-found', request.url), {
         status: 404,
       });
@@ -38,24 +37,34 @@ export async function middleware(request: NextRequest) {
       });
     }
 
-    // Role-based segregation: each role can ONLY access their own panel
-    // Attempting to access another role's panel returns 404
-    if (pathname.startsWith('/panel/ustoz') && payload.role !== 'TEACHER') {
+    // STRICT SECRECY: Only SUPER_ADMIN can access /panel/super-admin
+    // For anyone else (Director, Zavuch, Ustoz, or unauthorized), it completely looks like 404 Not Found
+    if (isSuperAdminPanel && payload.role !== 'SUPER_ADMIN') {
       return NextResponse.rewrite(new URL('/not-found', request.url), {
         status: 404,
       });
     }
 
-    if (pathname.startsWith('/panel/zavuch') && payload.role !== 'ZAVUCH') {
-      return NextResponse.rewrite(new URL('/not-found', request.url), {
-        status: 404,
-      });
-    }
+    // Role-based segregation for standard panels:
+    // Super Admin can inspect all panels; otherwise each role is strictly restricted to its own panel
+    if (payload.role !== 'SUPER_ADMIN') {
+      if (pathname.startsWith('/panel/ustoz') && payload.role !== 'TEACHER') {
+        return NextResponse.rewrite(new URL('/not-found', request.url), {
+          status: 404,
+        });
+      }
 
-    if (pathname.startsWith('/panel/direktor') && payload.role !== 'DIRECTOR') {
-      return NextResponse.rewrite(new URL('/not-found', request.url), {
-        status: 404,
-      });
+      if (pathname.startsWith('/panel/zavuch') && payload.role !== 'ZAVUCH') {
+        return NextResponse.rewrite(new URL('/not-found', request.url), {
+          status: 404,
+        });
+      }
+
+      if (pathname.startsWith('/panel/direktor') && payload.role !== 'DIRECTOR') {
+        return NextResponse.rewrite(new URL('/not-found', request.url), {
+          status: 404,
+        });
+      }
     }
   }
 

@@ -2,6 +2,7 @@ export enum Role {
   TEACHER = 'TEACHER',
   ZAVUCH = 'ZAVUCH',
   DIRECTOR = 'DIRECTOR',
+  SUPER_ADMIN = 'SUPER_ADMIN',
 }
 
 export enum AttendanceStatus {
@@ -26,6 +27,7 @@ export const ROLE_LABELS: Record<Role, string> = {
   [Role.TEACHER]: "O'qituvchi",
   [Role.ZAVUCH]: 'Zavuch',
   [Role.DIRECTOR]: 'Direktor',
+  [Role.SUPER_ADMIN]: 'Nazoratchi (Super Admin)',
 };
 
 export const ATTENDANCE_STATUS_LABELS: Record<AttendanceStatus, string> = {

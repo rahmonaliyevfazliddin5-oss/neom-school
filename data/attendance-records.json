@@ -1,0 +1,29 @@
+{
+  "class-9A_2026-10-24": {
+    "isSubmitted": true,
+    "marks": {
+      "test-std-1": "KELDI"
+    },
+    "attendanceRate": 100,
+    "updatedAt": "2026-10-24T05:22:44.955Z",
+    "submittedAt": "2026-10-24T05:22:44.976Z"
+  },
+  "class-1792819322777_2026-10-24": {
+    "isSubmitted": true,
+    "marks": {},
+    "attendanceRate": 100,
+    "submittedAt": "2026-10-24T05:22:03.127Z"
+  },
+  "class-1792819354891_2026-10-24": {
+    "isSubmitted": true,
+    "marks": {},
+    "attendanceRate": 100,
+    "submittedAt": "2026-10-24T05:22:35.205Z"
+  },
+  "class-1792819387852_2026-10-24": {
+    "isSubmitted": true,
+    "marks": {},
+    "attendanceRate": 100,
+    "submittedAt": "2026-10-24T05:23:08.185Z"
+  }
+}

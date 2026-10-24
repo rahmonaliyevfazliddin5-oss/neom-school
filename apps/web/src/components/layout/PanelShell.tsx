@@ -15,6 +15,7 @@ import {
   LayoutDashboard,
   Newspaper,
   ShieldCheck,
+  ShieldAlert,
   UserCog,
   LogOut,
   Sun,
@@ -79,6 +80,24 @@ export const PanelShell: React.FC<PanelShellProps> = ({
     }
   }, []);
 
+  // Real-time presence heartbeat to monitor active users across the 3 panels
+  React.useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const sendHeartbeat = () => {
+      fetch('/api/presence/heartbeat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ path: pathname }),
+      }).catch(() => {});
+    };
+
+    sendHeartbeat();
+    const interval = setInterval(sendHeartbeat, 20000);
+    return () => clearInterval(interval);
+  }, [pathname]);
+
   const toggleDarkMode = () => {
     const nextDark = !isDark;
     setIsDark(nextDark);
@@ -124,6 +143,13 @@ export const PanelShell: React.FC<PanelShellProps> = ({
           { title: 'Xodimlar', href: '/panel/direktor/xodimlar', icon: UserCog },
           { title: 'Hisobotlar', href: '/panel/direktor/hisobotlar', icon: BarChart3 },
         ];
+      case Role.SUPER_ADMIN:
+        return [
+          { title: 'Nazorat Markazi', href: '/panel/super-admin', icon: ShieldAlert },
+          { title: 'Direktor Paneli', href: '/panel/direktor', icon: ShieldCheck },
+          { title: 'Zavuch Paneli', href: '/panel/zavuch', icon: LayoutDashboard },
+          { title: 'Ustoz Paneli', href: '/panel/ustoz', icon: CalendarCheck },
+        ];
       default:
         return [];
     }
@@ -136,7 +162,7 @@ export const PanelShell: React.FC<PanelShellProps> = ({
       ? `O'qituvchi · ${currentClassName || '9-A'} sinf rahbari`
       : (currentRole || role) === Role.ZAVUCH
         ? "Zavuch · o'quv ishlari"
-        : 'Direktor';
+        : (currentRole || role) === Role.SUPER_ADMIN ? 'Nazoratchi (Super Admin)' : 'Direktor';
 
   const sidebarContent = (
     <div className="flex flex-col h-full gap-1.5 p-4 bg-[#0c2f66] text-white">
